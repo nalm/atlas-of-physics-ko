@@ -99,7 +99,7 @@ export const PAR = parallel(CIRC.C1, CIRC.C2, CIRC.V);
 
 // ---------- pages 6–7: a κ = 3 slab slides down into the gap ----------
 export const KAPPA = 3;                                      // plastic
-export const DIELECTRICS = [['vacuum', 1], ['air', 1.0006], ['Teflon', 2.1], ['plastic', 3], ['paper', 3.5], ['rubber', 7], ['water', 80], ['SrTiO₃', 233]];
+export const DIELECTRICS = [['진공', 1], ['공기', 1.0006], ['테플론', 2.1], ['플라스틱', 3], ['종이', 3.5], ['고무', 7], ['물', 80], ['SrTiO₃', 233]];
 export const SLIDE_T = 8;
 // fraction of the plate area the slab covers: in, hold, out
 export const fillOf = t => { const u = t / SLIDE_T; return u < 0.35 ? smoothstep(u / 0.35) : u < 0.65 ? 1 : 1 - smoothstep((u - 0.65) / 0.35); };

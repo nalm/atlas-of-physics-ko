@@ -20,7 +20,7 @@ startBook({
       { cls: 'vec', html: 'v<sub>x</sub>', at: () => W.anchors.vx() },
       { cls: 'vec', html: 'v<sub>y</sub>', at: () => W.anchors.vy() },
       ...[0, 1, 2, 3, 4, 5].map(q => ({ cls: 'tick', html: q ? `${q} m` : '0', at: () => W.anchors.staff(q) })),
-      ...[['boardX', 'position <i>y</i> (m)'], ['boardV', 'velocity <i>v</i> (m/s)'], ['boardA', 'acceleration <i>a</i> (m/s²)']].flatMap(([k, t]) => [
+      ...[['boardX', '위치 <i>y</i> (m)'], ['boardV', '속도 <i>v</i> (m/s)'], ['boardA', '가속도 <i>a</i> (m/s²)']].flatMap(([k, t]) => [
         { cls: 'board', html: t, at: () => W.anchors.board(k, 'title') },
         { cls: 'axis', html: '<i>t</i> (s)', at: () => W.anchors.board(k, 'axis') },
       ]),
@@ -44,8 +44,8 @@ startBook({
   },
   readout(s, page) {
     switch (page.scene) {
-      case 'rain': return `car ${f(M.RAIN.vc)} m/s   rain ${f(M.RAIN.vr)} m/s down\nfrom the car: ${f(M.vlen(M.V_RC))} m/s, ${f(M.RAIN_ANGLE, 1)}° from vertical`;
-      case 'river': { const t = s.river.t, [ax] = M.boatPos(0, t), [, by] = M.boatPos(M.AIM_UP, t); return `t ${f(Math.min(t, M.RIVER_RUN), 1)} s\nstraight: drift ${f(ax, 1)} m   upstream: across ${f(by, 1)} m`; }
+      case 'rain': return `자동차 ${f(M.RAIN.vc)} m/s   비 아래로 ${f(M.RAIN.vr)} m/s\n자동차에서 볼 때: ${f(M.vlen(M.V_RC))} m/s, 연직에서 ${f(M.RAIN_ANGLE, 1)}°`;
+      case 'river': { const t = s.river.t, [ax] = M.boatPos(0, t), [, by] = M.boatPos(M.AIM_UP, t); return `t ${f(Math.min(t, M.RIVER_RUN), 1)} s\n똑바로: 떠밀림 ${f(ax, 1)} m   상류 쪽: 가로지름 ${f(by, 1)} m`; }
       case 'pull': { const t = s.pull.t; return `t ${f(t)} s   x ${f(M.px(t)).padStart(5)} m\nv ${f(M.pv(t)).padStart(5)} m/s   a ${f(M.pa(t))} m/s²`; }
       case 'cube': { const t = s.cube.t; return `t ${f(t)} s   x ${f(M.cx(t)).padStart(5)} m\nv ${f(M.cv(t)).padStart(5)} m/s   a ${f(M.ca(t)).padStart(5)} m/s²`; }
     }
@@ -59,8 +59,8 @@ startBook({
     const live = document.getElementById('live-sign');
     if (live) {
       const v = M.vy(t);
-      live.textContent = resting ? 'now: resting on the ground between throws' : Math.abs(v) < 0.05 ? 'now: at the top, v = 0, a = −9.80 m/s²'
-        : v > 0 ? `now: v = +${v.toFixed(2)}, a = −9.80 → opposite signs → slowing down` : `now: v = −${(-v).toFixed(2)}, a = −9.80 → same signs → speeding up`;
+      live.textContent = resting ? '지금: 다음 던지기 전, 바닥에 정지' : Math.abs(v) < 0.05 ? '지금: 최고점, v = 0, a = −9.80 m/s²'
+        : v > 0 ? `지금: v = +${v.toFixed(2)}, a = −9.80 → 부호가 반대 → 느려지는 중` : `지금: v = −${(-v).toFixed(2)}, a = −9.80 → 부호가 같음 → 빨라지는 중`;
     }
     // live chart pieces: cursors, areas from 0 to now, tangents at now
     const cursor = (key, R, x, y) => q(`circle[data-cursor="${key}"]`).forEach(c => { c.setAttribute('cx', KC.sx(x, R)); c.setAttribute('cy', KC.sy(y, R)); });

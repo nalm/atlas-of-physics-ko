@@ -1,20 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Atlas of Physics</title>
+<title>물리 아틀라스</title>
+<meta name="description" content="3D 시각 자료와 상세한 설명으로 각 장을 공부하는 인터랙티브 물리 교과서 (AP 물리 1·C 역학, 전기와 자기). Atlas of Physics 한국어 번역판.">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="atlas.css">
 <script src="engine/cover.js" data-contents></script>
 <!-- every chapter draws with three.js: fetch it now, so a chapter opens without waiting on it -->
 <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js" crossorigin>
 <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.core.js" crossorigin>
 <style>
-  body { min-height: 100vh; padding: 0 16px 80px; }
+  body { min-height: 100vh; padding: 0 16px 80px; word-break: keep-all; }
   header { max-width: 1180px; margin: 0 auto; padding: 22px 12px; display: flex; justify-content: space-between; font: 500 12px var(--mono); letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
   header b { font: 500 19px var(--serif); letter-spacing: 0; text-transform: none; color: var(--strong); }
   .hero { text-align: center; margin: 72px auto 64px; max-width: 760px; }
@@ -32,6 +33,7 @@
   .card.soon { box-shadow: none; background: transparent; border: 1px dashed var(--faint); }
   .card.soon h2 { color: var(--lo); } .card.soon h2 + i { color: var(--faint); }
   .card .wait { margin-top: auto; font: 11px var(--mono); color: var(--lo); letter-spacing: .06em; text-transform: uppercase; }
+  footer.credit { max-width: 1180px; margin: 64px auto 0; padding: 0 4px; font: 12px/1.7 var(--sans); color: var(--muted); text-align: center; }
   header span { display: flex; align-items: center; gap: 18px; }
   .gh { display: flex; color: var(--muted); }
   .gh:hover { color: var(--strong); }
@@ -48,94 +50,94 @@
     .card img { grid-column: 2; grid-row: 1 / 4; margin: 0; width: 104px; align-self: center; }
   }
 </style>
-<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
-  <header><b>Atlas of Physics</b><span><a href="equations/" style="color:inherit">Equation sheet</a><a class="gh" href="https://github.com/nathanliow/atlas-of-physics" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></span></header>
+  <header><b>물리 아틀라스</b><span><a href="equations/" style="color:inherit">공식 모음</a><a class="gh" href="https://github.com/nathanliow/atlas-of-physics" aria-label="GitHub에서 소스 보기"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></span></header>
   <section class="hero">
-    <h1>Physics, taken apart.</h1>
-    <p>Learn each chapter with in-depth visuals and explanations</p>
+    <h1>물리, 하나씩 뜯어보기.</h1>
+    <p>깊이 있는 시각 자료와 설명으로 한 장씩 익히기</p>
   </section>
-  <h2 class="section">AP Physics 1/C · Mechanics</h2>
+  <h2 class="section">AP 물리 1/C · 역학</h2>
   <section class="shelf">
     <a class="card" href="kinematics/">
-      <div class="no"><span>No. 01</span><span>11 pages</span></div>
-      <h2>Kinematics</h2><i>motion, frames and calculus</i>
-      <img src="img/kinematics.jpg" alt="A ball thrown straight up beside a position axis, with velocity and acceleration arrows and motion graphs">
+      <div class="no"><span>No. 01</span><span>11페이지</span></div>
+      <h2>운동학</h2><i>운동, 기준틀, 미적분</i>
+      <img src="img/kinematics.jpg" alt="위치 축 옆에서 똑바로 위로 던진 공과 속도·가속도 화살표, 운동 그래프">
     </a>
     <a class="card" href="newton/">
-      <div class="no"><span>No. 02</span><span>13 pages</span></div>
-      <h2>Newton’s laws</h2><i>what changes motion</i>
-      <img src="img/newton.jpg" alt="A block on a 30 degree ramp with its weight, normal force and net force drawn as arrows">
+      <div class="no"><span>No. 02</span><span>13페이지</span></div>
+      <h2>뉴턴 법칙</h2><i>운동을 바꾸는 것</i>
+      <img src="img/newton.jpg" alt="30도 경사면 위의 물체와 무게·수직 항력·알짜힘 화살표">
     </a>
     <a class="card" href="circular/">
-      <div class="no"><span>No. 03</span><span>13 pages</span></div>
-      <h2>Circular motion</h2><i>circles, ellipses, escape</i>
-      <img src="img/circular.jpg" alt="A cart in a vertical loop with its normal force and weight">
+      <div class="no"><span>No. 03</span><span>13페이지</span></div>
+      <h2>원운동과 중력</h2><i>원, 타원, 탈출</i>
+      <img src="img/circular.jpg" alt="수직 고리 궤도를 도는 수레와 수직 항력, 무게">
     </a>
     <a class="card" href="energy/">
-      <div class="no"><span>No. 04</span><span>12 pages</span></div>
-      <h2>Work and energy</h2><i>from work to well</i>
-      <img src="img/energy.jpg" alt="A pendulum with live bars for kinetic, potential and total energy">
+      <div class="no"><span>No. 04</span><span>12페이지</span></div>
+      <h2>일과 에너지</h2><i>일에서 퍼텐셜 우물까지</i>
+      <img src="img/energy.jpg" alt="운동 에너지·퍼텐셜 에너지·전체 에너지를 실시간 막대로 보여 주는 진자">
     </a>
     <a class="card" href="momentum/">
-      <div class="no"><span>No. 05</span><span>12 pages</span></div>
-      <h2>Momentum</h2><i>mass in motion</i>
-      <img src="img/momentum.jpg" alt="A car and a truck colliding at a crossroads, with their momenta added tip to tail">
+      <div class="no"><span>No. 05</span><span>12페이지</span></div>
+      <h2>운동량</h2><i>움직이는 질량</i>
+      <img src="img/momentum.jpg" alt="교차로에서 충돌하는 승용차와 트럭, 머리-꼬리 방식으로 더한 두 운동량">
     </a>
     <a class="card" href="oscillations/">
-      <div class="no"><span>No. 06</span><span>12 pages</span></div>
-      <h2>Oscillations</h2><i>back and forth, and back again</i>
-      <img src="img/oscillations.jpg" alt="A block on a spring drawing its own cosine on a paper strip">
+      <div class="no"><span>No. 06</span><span>12페이지</span></div>
+      <h2>진동</h2><i>갔다가, 돌아오고, 다시</i>
+      <img src="img/oscillations.jpg" alt="종이 띠 위에 자신의 코사인 곡선을 그리는 용수철 위 물체">
     </a>
     <a class="card" href="rotation/">
-      <div class="no"><span>No. 07</span><span>15 pages</span></div>
-      <h2>Rotation</h2><i>turning, torque, angular momentum</i>
-      <img src="img/rotation.jpg" alt="A bicycle wheel with its angular velocity and angular acceleration arrows">
+      <div class="no"><span>No. 07</span><span>15페이지</span></div>
+      <h2>회전</h2><i>회전, 돌림힘, 각운동량</i>
+      <img src="img/rotation.jpg" alt="각속도와 각가속도 화살표가 표시된 자전거 바퀴">
     </a>
     <a class="card" href="fluids/">
-      <div class="no"><span>No. 08</span><span>9 pages</span></div>
-      <h2>Fluids</h2><i>pressure, buoyancy and flow</i>
-      <img src="img/fluids.jpg" alt="Two pistons on one sealed column of water, a small push holding up a large load">
+      <div class="no"><span>No. 08</span><span>9페이지</span></div>
+      <h2>유체</h2><i>압력, 부력, 흐름</i>
+      <img src="img/fluids.jpg" alt="밀폐된 하나의 물기둥 위 두 피스톤, 작은 힘으로 큰 짐을 떠받침">
     </a>
   </section>
-  <h2 class="section">AP Physics C · Electricity and magnetism</h2>
+  <h2 class="section">AP 물리 C · 전기와 자기</h2>
   <section class="shelf">
     <a class="card" href="electrostatics/">
-      <div class="no"><span>No. 09</span><span>9 pages</span></div>
-      <h2>Electrostatics</h2><i>charges, fields, superposition</i>
-      <img src="img/electrostatics.jpg" alt="The field lines of an electric dipole">
+      <div class="no"><span>No. 09</span><span>9페이지</span></div>
+      <h2>정전기학</h2><i>전하, 전기장, 중첩</i>
+      <img src="img/electrostatics.jpg" alt="전기 쌍극자의 전기력선">
     </a>
     <a class="card" href="gauss/">
-      <div class="no"><span>No. 10</span><span>9 pages</span></div>
-      <h2>Gauss’s law</h2><i>flux and enclosed charge</i>
-      <img src="img/gauss.jpg" alt="A hollow metal shell bending the field lines around it">
+      <div class="no"><span>No. 10</span><span>9페이지</span></div>
+      <h2>가우스 법칙</h2><i>선속과 내부 전하</i>
+      <img src="img/gauss.jpg" alt="주변 전기력선을 휘게 하는 속이 빈 금속 껍질">
     </a>
     <a class="card" href="potential/">
-      <div class="no"><span>No. 11</span><span>9 pages</span></div>
-      <h2>Electric potential</h2><i>energy per unit charge</i>
-      <img src="img/potential.jpg" alt="The potential of a point charge drawn as a hill with equipotential rings">
+      <div class="no"><span>No. 11</span><span>9페이지</span></div>
+      <h2>전위</h2><i>단위 전하당 에너지</i>
+      <img src="img/potential.jpg" alt="등전위 고리와 함께 언덕으로 그린 점전하의 전위">
     </a>
     <a class="card" href="capacitors/">
-      <div class="no"><span>No. 12</span><span>9 pages</span></div>
-      <h2>Capacitors</h2><i>charge held apart</i>
-      <img src="img/capacitors.jpg" alt="A spherical capacitor cut away to show the field between the shells">
+      <div class="no"><span>No. 12</span><span>9페이지</span></div>
+      <h2>축전기</h2><i>떨어뜨려 붙잡아 둔 전하</i>
+      <img src="img/capacitors.jpg" alt="두 껍질 사이의 전기장이 보이도록 잘라 낸 구형 축전기">
     </a>
     <a class="card" href="circuits/">
-      <div class="no"><span>No. 13</span><span>9 pages</span></div>
-      <h2>Circuits</h2><i>potential as height</i>
-      <img src="img/circuits.jpg" alt="A battery and resistor raised so each point's height is its potential">
+      <div class="no"><span>No. 13</span><span>9페이지</span></div>
+      <h2>회로</h2><i>높이로 보는 전위</i>
+      <img src="img/circuits.jpg" alt="각 점의 높이가 그 점의 전위가 되도록 들어 올린 전지와 저항">
     </a>
     <a class="card" href="magnetism/">
-      <div class="no"><span>No. 14</span><span>9 pages</span></div>
-      <h2>Magnetic fields</h2><i>made by moving charge</i>
-      <img src="img/magnetism.jpg" alt="A bar magnet drawn as stacked current loops, with its closed field lines">
+      <div class="no"><span>No. 14</span><span>9페이지</span></div>
+      <h2>자기장</h2><i>움직이는 전하가 만드는 것</i>
+      <img src="img/magnetism.jpg" alt="쌓인 전류 고리로 그린 막대자석과 닫힌 자기력선">
     </a>
     <a class="card" href="induction/">
-      <div class="no"><span>No. 15</span><span>10 pages</span></div>
-      <h2>Induction</h2><i>changing flux, induced current</i>
-      <img src="img/induction.jpg" alt="A bar magnet approaching a loop, with field lines, the induced current and its field">
+      <div class="no"><span>No. 15</span><span>10페이지</span></div>
+      <h2>전자기 유도</h2><i>변하는 선속, 유도 전류</i>
+      <img src="img/induction.jpg" alt="고리에 다가가는 막대자석과 자기력선, 유도 전류와 그 자기장">
     </a>
   </section>
+  <footer class="credit">원작: <a href="https://github.com/nathanliow/atlas-of-physics">Atlas of Physics</a> (Nathan Liow, MIT License) · 한국어 번역판</footer>
 </body>
 </html>

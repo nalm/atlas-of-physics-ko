@@ -26,7 +26,7 @@ export function buildWorld(E) {
   lines(root, grid, '#e6e6e2');
 
   // surfaces: smooth strips are frictionless, hatched patches are rough
-  const smooth = (x0, x1, z0 = -0.9, z1 = 0.9) => part(root, box(x1 - x0, 0.02, z1 - z0, 0.005), { tone: 'lo', pal: 'board', pos: [(x0 + x1) / 2, 0.01, (z0 + z1) / 2], name: 'Surface' });
+  const smooth = (x0, x1, z0 = -0.9, z1 = 0.9) => part(root, box(x1 - x0, 0.02, z1 - z0, 0.005), { tone: 'lo', pal: 'board', pos: [(x0 + x1) / 2, 0.01, (z0 + z1) / 2], name: '면' });
   const rough = (x0, x1, z0 = -0.9, z1 = 0.9) => {
     smooth(x0, x1, z0, z1);
     const h = [];
@@ -34,14 +34,14 @@ export function buildWorld(E) {
     lines(root, h, '#9a9aa0');
   };
 
-  const block = (parent, s, name = 'Block') => part(parent, box(s, s, s, 0.03), { tone: 'hi', name });
-  const force = (parent, red = false) => arrow(parent, red ? 'red' : 'ink', { r: 0.022, head: 0.12, headR: 0.06, name: 'Forces' });
+  const block = (parent, s, name = '블록') => part(parent, box(s, s, s, 0.03), { tone: 'hi', name });
+  const force = (parent, red = false) => arrow(parent, red ? 'red' : 'ink', { r: 0.022, head: 0.12, headR: 0.06, name: '힘' });
   const tip = a => a.visible ? a.localToWorld(V(0, a.userData.arrow.shaft.scale.y + 0.16, 0)) : null;
 
   // ---------- 1 · forces: a block at rest ----------
   const X0 = STATIONS.rest;
   smooth(X0 - 1.2, X0 + 1.2);
-  const g0 = asm('rest', root, { title: 'A block at rest', sub: 'two forces, balanced' });
+  const g0 = asm('rest', root, { title: '정지해 있는 블록', sub: '균형을 이룬 두 힘' });
   const b0 = block(g0, S1); b0.position.set(X0, 0.02 + S1 / 2, 0);
   const fg0 = force(g0), fn0 = force(g0);
   label('vec', 'F<sub>g</sub>', () => tip(fg0)); label('vec', 'F<sub>N</sub>', () => tip(fn0));
@@ -50,7 +50,7 @@ export function buildWorld(E) {
   // ---------- 2 · first law: gliding at constant velocity ----------
   const X1 = STATIONS.glide;
   smooth(X1 - 2.4, X1 + 2.4);
-  const g1 = asm('glide', root, { title: 'Gliding block', sub: 'no net force, so no change in motion' });
+  const g1 = asm('glide', root, { title: '미끄러지는 블록', sub: '알짜힘이 없으므로 운동이 변하지 않는다' });
   const b1 = block(g1, S1);
   const fg1 = force(g1), fn1 = force(g1);
   label('vec', 'F<sub>g</sub>', () => tip(fg1)); label('vec', 'F<sub>N</sub>', () => tip(fn1));
@@ -61,8 +61,8 @@ export function buildWorld(E) {
   // ---------- 3 · second law: same push, double the mass ----------
   const X2 = STATIONS.second;
   smooth(X2 - 1.0, X2 + 3.2, -1.4, 1.4);
-  const g2 = asm('second', root, { title: 'Same push, different mass', sub: 'ΣF = ma' });
-  const b2a = block(g2, S1, '2.0 kg block'), b2b = block(g2, S2, '4.0 kg block');
+  const g2 = asm('second', root, { title: '같은 힘, 다른 질량', sub: 'ΣF = ma' });
+  const b2a = block(g2, S1, '2.0 kg 블록'), b2b = block(g2, S2, '4.0 kg 블록');
   const push2a = force(g2), push2b = force(g2), net2a = force(g2, true), net2b = force(g2, true);
   label('vec', 'F', () => tip(push2a)); label('vec', 'F', () => tip(push2b));
   label('tick', '2.0 kg', () => V(b2a.position.x - S1 / 2, S1 + 0.16, b2a.position.z + S1 / 2));
@@ -72,7 +72,7 @@ export function buildWorld(E) {
   // ---------- 4 · friction: a growing push on a rough floor ----------
   const X3 = STATIONS.friction;
   rough(X3 - 1.4, X3 + 2.2);
-  const g3 = asm('friction', root, { title: 'Friction', sub: 'static until it can’t, then kinetic' });
+  const g3 = asm('friction', root, { title: '마찰력', sub: '버틸 수 있을 때까지는 정지 마찰, 그다음은 운동 마찰' });
   const b3 = block(g3, S1);
   const fg3 = force(g3), fn3 = force(g3), fa3 = force(g3), ff3 = force(g3), net3 = force(g3, true);
   label('vec', 'F<sub>app</sub>', () => tip(fa3)); label('vec', 'f', () => tip(ff3));
@@ -81,8 +81,8 @@ export function buildWorld(E) {
   // ---------- 5 · third law: A pushes B ----------
   const X4 = STATIONS.third;
   smooth(X4 - 1.4, X4 + 2.4);
-  const g4 = asm('third', root, { title: 'Two blocks in contact', sub: 'A pushes B; B pushes A back' });
-  const b4a = block(g4, S1, 'Block A · 2.0 kg'), b4b = block(g4, S2, 'Block B · 4.0 kg');
+  const g4 = asm('third', root, { title: '맞닿은 두 블록', sub: 'A가 B를 밀고, B가 A를 되민다' });
+  const b4a = block(g4, S1, '블록 A · 2.0 kg'), b4b = block(g4, S2, '블록 B · 4.0 kg');
   const push4 = force(g4), onB = force(g4), onA = force(g4);
   label('vec', 'F', () => tip(push4)); label('vec', 'F<sub>A on B</sub>', () => tip(onB)); label('vec', 'F<sub>B on A</sub>', () => tip(onA));
   label('tick', 'A', () => V(b4a.position.x, S1 + 0.14, S1 / 2)); label('tick', 'B', () => V(b4b.position.x, S2 + 0.14, S2 / 2));
@@ -92,23 +92,23 @@ export function buildWorld(E) {
   const topX = X5 - L * Math.cos(th) / 2, topY = L * Math.sin(th);
   const tri = new THREE.Shape(); tri.moveTo(topX, 0); tri.lineTo(topX + L * Math.cos(th), 0); tri.lineTo(topX, topY); tri.closePath();
   const rampGeo = new THREE.ExtrudeGeometry(tri, { depth: 1.4, bevelEnabled: false }); rampGeo.translate(0, 0, -0.7);
-  part(root, rampGeo, { tone: 'mid', name: 'Ramp', mat: shadeMat('board', { opacity: 0.55 }) });
-  const g5 = asm('incline', root, { title: 'Block on a ramp', sub: `${M.THETA_DEG}°, frictionless` });
+  part(root, rampGeo, { tone: 'mid', name: '경사면', mat: shadeMat('board', { opacity: 0.55 }) });
+  const g5 = asm('incline', root, { title: '경사면 위의 블록', sub: `${M.THETA_DEG}°, 마찰 없음` });
   const b5 = block(g5, S1); b5.rotation.z = -th;
-  const fg5 = force(g5), fn5 = force(g5), par5 = arrow(g5, 'dark', { r: 0.018, head: 0.1, headR: 0.05, name: 'Components', tone: 'mid' }), perp5 = arrow(g5, 'dark', { r: 0.018, head: 0.1, headR: 0.05, name: 'Components', tone: 'mid' }), net5 = force(g5, true);
+  const fg5 = force(g5), fn5 = force(g5), par5 = arrow(g5, 'dark', { r: 0.018, head: 0.1, headR: 0.05, name: '성분', tone: 'mid' }), perp5 = arrow(g5, 'dark', { r: 0.018, head: 0.1, headR: 0.05, name: '성분', tone: 'mid' }), net5 = force(g5, true);
   label('vec', 'F<sub>g</sub>', () => tip(fg5)); label('vec', 'F<sub>N</sub>', () => tip(fn5)); label('vec red', 'ΣF', () => tip(net5));
   label('vec', 'mg sin θ', () => tip(par5)); label('vec', 'mg cos θ', () => tip(perp5));
   label('tick', `θ = ${M.THETA_DEG}°`, () => V(topX + L * Math.cos(th) - 0.95, 0.18, 0.75));
 
   // ---------- tension: one string, and two strings at a changing angle ----------
   const XT = STATIONS.tension, CEIL = 2.6;
-  part(root, box(4.4, 0.08, 0.5, 0.02), { tone: 'mid', pal: 'board', pos: [XT, CEIL + 0.04, 0], name: 'Ceiling' });
-  const gT = asm('tension', root, { title: 'Hanging block', sub: 'tension holds it up' });
-  const bT1 = block(gT, S1, 'One string'), bT2 = block(gT, S1, 'Two strings');
-  const thin = r => part(gT, new THREE.CylinderGeometry(0.008, 0.008, 1, 8), { tone: 'hi', pal: 'ink', name: 'Strings' });
+  part(root, box(4.4, 0.08, 0.5, 0.02), { tone: 'mid', pal: 'board', pos: [XT, CEIL + 0.04, 0], name: '천장' });
+  const gT = asm('tension', root, { title: '매달린 블록', sub: '장력이 블록을 떠받친다' });
+  const bT1 = block(gT, S1, '줄 하나'), bT2 = block(gT, S1, '줄 둘');
+  const thin = r => part(gT, new THREE.CylinderGeometry(0.008, 0.008, 1, 8), { tone: 'hi', pal: 'ink', name: '줄' });
   const s1 = thin(), s2a = thin(), s2b = thin(), s2c = thin();
   const fgT1 = force(gT), tT1 = force(gT), fgT2 = force(gT), tT2a = force(gT), tT2b = force(gT);
-  const cmp = () => arrow(gT, 'dark', { r: 0.014, head: 0.08, headR: 0.04, name: 'Components', tone: 'mid' });
+  const cmp = () => arrow(gT, 'dark', { r: 0.014, head: 0.08, headR: 0.04, name: '성분', tone: 'mid' });
   const tx2a = cmp(), ty2a = cmp(), tx2b = cmp(), ty2b = cmp();
   label('vec', 'T', () => tip(tT1)); label('vec', 'F<sub>g</sub>', () => tip(fgT1));
   label('vec', 'T<sub>1</sub>', () => tip(tT2a)); label('vec', 'T<sub>2</sub>', () => tip(tT2b)); label('vec', '<i>mg</i>', () => tip(fgT2));
@@ -116,34 +116,34 @@ export function buildWorld(E) {
 
   // ---------- a plane in level flight ----------
   const XP = STATIONS.plane, PY = 3.2;
-  const gP = asm('plane', root, { title: 'Plane in level flight', sub: 'four forces, all balanced' });
+  const gP = asm('plane', root, { title: '수평 비행하는 비행기', sub: '네 힘이 모두 균형을 이룬다' });
   const plane = new THREE.Group(); gP.add(plane);
-  part(plane, xAxis(new THREE.CylinderGeometry(0.42, 0.3, 4.6, 32)), { tone: 'hi', name: 'Fuselage' });
-  part(plane, xAxis(new THREE.ConeGeometry(0.42, 1.0, 32)).translate(2.8, 0, 0), { tone: 'hi', name: 'Fuselage' });
-  part(plane, xAxis(new THREE.ConeGeometry(0.3, 1.4, 32)).rotateZ(Math.PI).translate(-3.0, 0, 0), { tone: 'hi', name: 'Fuselage' });
-  part(plane, box(1.3, 0.1, 8.4, 0.04), { tone: 'hi', pos: [0.5, 0.15, 0], name: 'Wing' });
-  part(plane, box(0.75, 0.07, 2.8, 0.03), { tone: 'hi', pos: [-3.3, 0.1, 0], name: 'Tail' });
-  part(plane, box(0.9, 1.1, 0.07, 0.03), { tone: 'hi', pos: [-3.35, 0.6, 0], name: 'Tail' });
-  part(plane, box(0.06, 1.7, 0.16, 0.03), { tone: 'mid', pal: 'dark', pos: [3.32, 0, 0], name: 'Propeller' });
-  part(plane, box(0.4, 0.18, 0.5, 0.05), { tone: 'mid', pal: 'dark', pos: [1.2, 0.42, 0], name: 'Canopy' });
+  part(plane, xAxis(new THREE.CylinderGeometry(0.42, 0.3, 4.6, 32)), { tone: 'hi', name: '동체' });
+  part(plane, xAxis(new THREE.ConeGeometry(0.42, 1.0, 32)).translate(2.8, 0, 0), { tone: 'hi', name: '동체' });
+  part(plane, xAxis(new THREE.ConeGeometry(0.3, 1.4, 32)).rotateZ(Math.PI).translate(-3.0, 0, 0), { tone: 'hi', name: '동체' });
+  part(plane, box(1.3, 0.1, 8.4, 0.04), { tone: 'hi', pos: [0.5, 0.15, 0], name: '날개' });
+  part(plane, box(0.75, 0.07, 2.8, 0.03), { tone: 'hi', pos: [-3.3, 0.1, 0], name: '꼬리 날개' });
+  part(plane, box(0.9, 1.1, 0.07, 0.03), { tone: 'hi', pos: [-3.35, 0.6, 0], name: '꼬리 날개' });
+  part(plane, box(0.06, 1.7, 0.16, 0.03), { tone: 'mid', pal: 'dark', pos: [3.32, 0, 0], name: '프로펠러' });
+  part(plane, box(0.4, 0.18, 0.5, 0.05), { tone: 'mid', pal: 'dark', pos: [1.2, 0.42, 0], name: '조종석 덮개' });
   const pLift = force(gP), pW = force(gP), pT = force(gP), pD = force(gP);
-  label('vec', 'lift', () => tip(pLift)); label('vec', 'F<sub>g</sub>', () => tip(pW)); label('vec', 'thrust', () => tip(pT)); label('vec', 'drag', () => tip(pD));
+  label('vec', '양력', () => tip(pLift)); label('vec', 'F<sub>g</sub>', () => tip(pW)); label('vec', '추력', () => tip(pT)); label('vec', '항력', () => tip(pD));
 
   // ---------- a car speeding up ----------
   const XC = STATIONS.car - 6;
-  part(root, box(24, 0.03, 3.4, 0.01), { tone: 'lo', pal: 'board', pos: [XC + 9, 0.015, 0], name: 'Road' });
+  part(root, box(24, 0.03, 3.4, 0.01), { tone: 'lo', pal: 'board', pos: [XC + 9, 0.015, 0], name: '도로' });
   const dashes = []; for (let x = XC - 2.5; x < XC + 20.5; x += 2) dashes.push(x, 0.035, 0, x + 1, 0.035, 0);
   lines(root, dashes, '#9a9aa0');
-  const gC = asm('car', root, { title: 'Car speeding up', sub: 'the road pushes it forward' });
+  const gC = asm('car', root, { title: '빨라지는 자동차', sub: '도로가 자동차를 앞으로 민다' });
   const carG = new THREE.Group(); gC.add(carG);
-  part(carG, box(4.2, 0.7, 1.8, 0.18), { tone: 'hi', pos: [0, 0.75, 0], name: 'Body' });
-  part(carG, box(2.2, 0.6, 1.6, 0.2), { tone: 'hi', pos: [-0.3, 1.38, 0], name: 'Cabin' });
+  part(carG, box(4.2, 0.7, 1.8, 0.18), { tone: 'hi', pos: [0, 0.75, 0], name: '차체' });
+  part(carG, box(2.2, 0.6, 1.6, 0.2), { tone: 'hi', pos: [-0.3, 1.38, 0], name: '객실' });
   for (const [x, z] of [[1.35, 0.85], [1.35, -0.85], [-1.35, 0.85], [-1.35, -0.85]]) {
-    part(carG, zAxis(new THREE.CylinderGeometry(0.36, 0.36, 0.26, 28)), { tone: 'mid', pal: 'dark', pos: [x, 0.36, z], name: 'Wheels' });
-    part(carG, zAxis(new THREE.CylinderGeometry(0.17, 0.17, 0.28, 20)), { tone: 'mid', pos: [x, 0.36, z], name: 'Wheels' });
+    part(carG, zAxis(new THREE.CylinderGeometry(0.36, 0.36, 0.26, 28)), { tone: 'mid', pal: 'dark', pos: [x, 0.36, z], name: '바퀴' });
+    part(carG, zAxis(new THREE.CylinderGeometry(0.17, 0.17, 0.28, 20)), { tone: 'mid', pos: [x, 0.36, z], name: '바퀴' });
   }
   const cW = force(gC), cN = force(gC), cF = force(gC), cD = force(gC), cNet = force(gC, true);
-  label('vec', 'F<sub>g</sub>', () => tip(cW)); label('vec', 'F<sub>N</sub>', () => tip(cN)); label('vec', 'friction', () => tip(cF)); label('vec', 'drag', () => tip(cD)); label('vec red', 'ΣF', () => tip(cNet));
+  label('vec', 'F<sub>g</sub>', () => tip(cW)); label('vec', 'F<sub>N</sub>', () => tip(cN)); label('vec', '마찰력', () => tip(cF)); label('vec', '항력', () => tip(cD)); label('vec red', 'ΣF', () => tip(cNet));
 
 
   // centre of mass: the quartered disc, drawn over solids so it can be seen inside them
@@ -152,7 +152,7 @@ export function buildWorld(E) {
     for (let k = 0; k < 4; k++) {
       const geo = new THREE.CylinderGeometry(r, r, 0.01, 12, 1, false, k * Math.PI / 2, Math.PI / 2); geo.rotateX(Math.PI / 2);
       const mat = shadeMat(k % 2 ? 'paper' : 'ink').clone(); mat.depthTest = false; mat.transparent = true;
-      part(g, geo, { tone: 'hi', name: 'Centre of mass', mat }).renderOrder = 11;
+      part(g, geo, { tone: 'hi', name: '질량 중심', mat }).renderOrder = 11;
     }
     return g;
   }
@@ -162,7 +162,7 @@ export function buildWorld(E) {
   // ---------- systems: a tug of war on ice ----------
   const XG = STATIONS.tug, TG = M.TUG, HAND = 1.0, REACH = 0.26;
   smooth(XG - 3.6, XG + 2.8, -1.1, 1.1);
-  const gG = asm('tug', root, { title: 'Tug of war on ice', sub: 'internal forces cancel; the centre of mass stays put' });
+  const gG = asm('tug', root, { title: '얼음 위의 줄다리기', sub: '내력은 상쇄되고, 질량 중심은 제자리에 있다' });
   const skater = (r, h, dir, name) => {
     const g = new THREE.Group(); gG.add(g);
     part(g, cyl(r, h, 28), { tone: 'hi', pos: [0, h / 2 + 0.02, 0], name });
@@ -170,24 +170,24 @@ export function buildWorld(E) {
     part(g, xAxis(cyl(0.035, REACH + 0.04, 12)), { tone: 'hi', pos: [dir * (r + REACH / 2 - 0.02), HAND, 0], name });
     g.userData.r = r; return g;
   };
-  const skA = skater(0.17, 1.25, 1, 'Skater A · 50 kg'), skB = skater(0.21, 1.4, -1, 'Skater B · 75 kg');
-  const rope = part(gG, new THREE.CylinderGeometry(0.012, 0.012, 1, 8), { tone: 'mid', pal: 'dark', name: 'Rope' });
+  const skA = skater(0.17, 1.25, 1, '스케이터 A · 50 kg'), skB = skater(0.21, 1.4, -1, '스케이터 B · 75 kg');
+  const rope = part(gG, new THREE.CylinderGeometry(0.012, 0.012, 1, 8), { tone: 'mid', pal: 'dark', name: '밧줄' });
   const tOnA = force(gG), tOnB = force(gG);
   const cmG = cmMark(gG, 0.09);
-  const sysBox = part(gG, box(1, 1, 1, 0.04), { tone: 'lo', name: 'System', mat: shadeMat('board', { opacity: 0.35 }) });
+  const sysBox = part(gG, box(1, 1, 1, 0.04), { tone: 'lo', name: '계', mat: shadeMat('board', { opacity: 0.35 }) });
   const above = a => a.visible ? a.localToWorld(V(0, a.userData.arrow.shaft.scale.y / 2, 0)).add(V(0, 0.2, 0)) : null;
   label('vec', 'T<sub>on A</sub>', () => above(tOnA)); label('vec', 'T<sub>on B</sub>', () => above(tOnB));
   label('tick', 'A · 50 kg', () => V(skA.position.x - 0.12, 1.25 + 0.42, 0.2)); label('tick', 'B · 75 kg', () => V(skB.position.x + 0.62, 1.4 + 0.48, 0.2));
   label('vec blue', 'x<sub>cm</sub>', () => V(XG, 0.32, 0.5));
-  label('board', 'system', () => sysBox.visible && gG.userData.explode > 0.5 ? V(sysBox.position.x - sysBox.scale.x / 2 + 0.08, 2.32, 0.65) : null);
+  label('board', '계', () => sysBox.visible && gG.userData.explode > 0.5 ? V(sysBox.position.x - sysBox.scale.x / 2 + 0.08, 2.32, 0.65) : null);
   { const t = []; for (let k = -1; k <= 1; k += 0.25) t.push(XG, 0.025, k * 1.0, XG, 0.025, k * 1.0 + 0.12); lines(root, t, '#5b86d6'); }   // dashed line through x_cm
 
   // ---------- ΣF_ext = M a_cm: a block on a board, the board pulled ----------
   const XB = STATIONS.board, BD = M.BOARD, XB0 = XB - 1.6, BH = 0.08;
   smooth(XB - 3.2, XB + 3.6, -1.0, 1.0);
-  const gB = asm('board', root, { title: 'Block on a board', sub: 'friction between them is internal' });
-  const plank = part(gB, box(BD.len, BH, 0.9, 0.02), { tone: 'mid', name: 'Board · 4.0 kg' });
-  const bB = block(gB, S1, 'Block · 2.0 kg');
+  const gB = asm('board', root, { title: '판 위의 블록', sub: '둘 사이의 마찰력은 내력이다' });
+  const plank = part(gB, box(BD.len, BH, 0.9, 0.02), { tone: 'mid', name: '판 · 4.0 kg' });
+  const bB = block(gB, S1, '블록 · 2.0 kg');
   const pullB = force(gB), fOnBlock = force(gB), fOnBoard = force(gB), netB = force(gB, true);
   const cmB = cmMark(gB, 0.07);
   label('vec', 'F', () => tip(pullB)); const below = a => a.visible ? a.localToWorld(V(0, a.userData.arrow.shaft.scale.y / 2, 0)).add(V(-0.1, -0.2, 0.15)) : null;
@@ -203,8 +203,8 @@ export function buildWorld(E) {
     for (let y = 0; y <= DR.y0; y += 0.5) t.push(XD - 1.0, y, 0, XD - (y % 1 ? 0.92 : 0.84), y, 0);
     lines(root, t, '#8a8a8f'); }
   label('axis', '5 m', () => V(XD - 1.05, 5, 0)); label('axis', '0', () => V(XD - 1.05, 0.05, 0));
-  const gD = asm('drag', root, { title: 'Falling with drag ∝ v', sub: 'drag grows until it matches the weight' });
-  const ballD = part(gD, new THREE.SphereGeometry(RB, 32, 20), { tone: 'hi', name: 'Ball · 0.50 kg' });
+  const gD = asm('drag', root, { title: '항력 ∝ v를 받으며 낙하', sub: '항력이 무게와 같아질 때까지 커진다' });
+  const ballD = part(gD, new THREE.SphereGeometry(RB, 32, 20), { tone: 'hi', name: '공 · 0.50 kg' });
   const wD = force(gD), dD = force(gD), netD = force(gD, true);
   const ghostsD = Array.from({ length: 8 }, () => ghostCircle(RB));
   label('vec', 'F<sub>g</sub> = <i>mg</i>', () => tip(wD)); label('vec', 'F<sub>d</sub> = <i>bv</i>', () => tip(dD)); label('vec red', 'ΣF', () => tip(netD));
@@ -213,16 +213,16 @@ export function buildWorld(E) {
 
   // ---------- AP C: a steel ball sinking in honey, drawn 10× life size ----------
   const XH = STATIONS.honey, HN = M.HONEY, Z10 = 10, JR = 0.32, BASE = 0.04, HTOP = BASE + HN.jarH * Z10, JH = HTOP + 0.16;
-  part(root, cyl(JR, BASE, 40), { tone: 'mid', pal: 'board', pos: [XH, BASE / 2, 0], name: 'Jar' });
-  part(root, cyl(JR - 0.01, HN.jarH * Z10, 40), { tone: 'lo', pal: 'base', pos: [XH, BASE + HN.jarH * Z10 / 2, 0], name: 'Honey', mat: shadeMat('base', { opacity: 0.4 }) });
-  part(root, new THREE.CylinderGeometry(JR, JR, JH - BASE, 40, 1, true), { tone: 'lo', pal: 'board', pos: [XH, BASE + (JH - BASE) / 2, 0], name: 'Jar', mat: shadeMat('board', { opacity: 0.25 }) });
+  part(root, cyl(JR, BASE, 40), { tone: 'mid', pal: 'board', pos: [XH, BASE / 2, 0], name: '병' });
+  part(root, cyl(JR - 0.01, HN.jarH * Z10, 40), { tone: 'lo', pal: 'base', pos: [XH, BASE + HN.jarH * Z10 / 2, 0], name: '꿀', mat: shadeMat('base', { opacity: 0.4 }) });
+  part(root, new THREE.CylinderGeometry(JR, JR, JH - BASE, 40, 1, true), { tone: 'lo', pal: 'board', pos: [XH, BASE + (JH - BASE) / 2, 0], name: '병', mat: shadeMat('board', { opacity: 0.25 }) });
   { const t = []; for (let k = 0; k <= 12; k++) { const y = BASE + k * 0.1, w = k % 5 ? 0.06 : 0.12; t.push(XH + JR + 0.02, y, 0, XH + JR + 0.02 + w, y, 0); } lines(root, t, '#8a8a8f'); }
   label('board', '0', () => V(XH + JR + 0.2, BASE, 0)); label('board', '5 cm', () => V(XH + JR + 0.2, BASE + 0.5, 0)); label('board', '10 cm', () => V(XH + JR + 0.2, BASE + 1.0, 0));
-  const gH = asm('honey', root, { title: 'Steel ball in honey', sub: 'at terminal speed within milliseconds' });
+  const gH = asm('honey', root, { title: '꿀 속의 강철 공', sub: '수 밀리초 안에 종단 속력에 도달' });
   gH.userData.minDist = 4; gH.userData.minRadius = 0.6;
   const RH = HN.r * Z10, YH0 = HTOP - 0.09;
-  const ballH = part(gH, new THREE.SphereGeometry(RH, 24, 16), { tone: 'mid', pal: 'dark', name: 'Steel ball · 10 mm' });
-  const thinF = (red = false) => arrow(gH, red ? 'red' : 'ink', { r: 0.009, head: 0.06, headR: 0.026, name: 'Forces' });
+  const ballH = part(gH, new THREE.SphereGeometry(RH, 24, 16), { tone: 'mid', pal: 'dark', name: '강철 공 · 10 mm' });
+  const thinF = (red = false) => arrow(gH, red ? 'red' : 'ink', { r: 0.009, head: 0.06, headR: 0.026, name: '힘' });
   const wH = thinF(), dH = thinF(), bH = thinF();
   const ghostsH = Array.from({ length: 6 }, () => ghostCircle(RH));
   label('vec', 'F<sub>g</sub>', () => tip(wH)); label('vec', 'F<sub>d</sub>', () => tip(dH)); label('vec', 'B', () => tip(bH));

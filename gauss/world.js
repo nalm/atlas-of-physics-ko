@@ -44,17 +44,17 @@ export function buildWorld(E) {
     const a = i / 72 * 2 * Math.PI, c = r * Math.cos(a), s = r * Math.sin(a);
     return axis === 'y' ? V(at[0] + c, at[1], at[2] + s) : axis === 'x' ? V(at[0], at[1] + c, at[2] + s) : V(at[0] + c, at[1] + s, at[2]);
   }));
-  const fieldArrow = (parent, name = 'Field') => arrow(parent, 'blue', { r: 0.024, head: 0.13, headR: 0.06, name });
+  const fieldArrow = (parent, name = '전기장') => arrow(parent, 'blue', { r: 0.024, head: 0.13, headR: 0.06, name });
   const inkArrow = (parent, name) => arrow(parent, 'ink', { r: 0.02, head: 0.12, headR: 0.055, name });
   const greyArrow = (parent, name) => arrow(parent, 'dark', { r: 0.016, head: 0.1, headR: 0.045, name, tone: 'mid' });
   const tip = a => a.visible ? a.localToWorld(V(0, a.userData.arrow.shaft.scale.y + 0.2, 0)) : null;
-  const charge = (parent, pos, sign = 1, name = 'Charge') => {
+  const charge = (parent, pos, sign = 1, name = '전하') => {
     const m = part(parent, new THREE.SphereGeometry(0.15, 32, 20), { tone: 'hi', name, pos: pos.toArray() });
     label(sign > 0 ? 'vec red' : 'vec blue', sign > 0 ? '+' : '−', () => m.getWorldPosition(V()));
     return m;
   };
   // tiny red dots: positive charge on or in a solid
-  function dots(parent, pts, name = 'Charge', r = 0.035, pal = 'red') {
+  function dots(parent, pts, name = '전하', r = 0.035, pal = 'red') {
     const im = new THREE.InstancedMesh(new THREE.SphereGeometry(r, 10, 8), shadeMat(pal), pts.length);
     const m4 = new THREE.Matrix4();
     pts.forEach((p, i) => im.setMatrixAt(i, m4.makeTranslation(p.x, p.y, p.z)));
@@ -77,20 +77,20 @@ export function buildWorld(E) {
   // 1 · flux through a flat square in a uniform field
   // ======================================================================
   const XF = STATIONS.flux, cF = V(XF, Y, 0);
-  const gF = asm('flux', root, { title: 'A square in a uniform field', sub: 'Φ = EA cos θ' });
+  const gF = asm('flux', root, { title: '균일한 전기장 속의 정사각형', sub: 'Φ = EA cos θ' });
   {
     const pts = [], vals = [-1.75, -1.25, -0.75, -0.25, 0.25, 0.75, 1.25, 1.75];
     for (const y of vals) for (const z of vals) pts.push(XF - 2.6, Y + y, z, XF + 3.0, Y + y, z);
     lines(root, pts, '#a9bfeb');
   }
-  const fE = [0, 1, 2].map(() => fieldArrow(gF, 'Field'));
+  const fE = [0, 1, 2].map(() => fieldArrow(gF, '전기장'));
   label('vec blue', '<b>E</b>', () => tip(fE[2]));
   const plateF = new THREE.Group(); plateF.position.copy(cF); gF.add(plateF);
-  part(plateF, box(0.03, 2, 2, 0.01), { tone: 'hi', name: 'Surface', mat: shadeMat('paper', { opacity: 0.6 }) });
-  const fA = inkArrow(gF, 'Area vector');
+  part(plateF, box(0.03, 2, 2, 0.01), { tone: 'hi', name: '면', mat: shadeMat('paper', { opacity: 0.6 }) });
+  const fA = inkArrow(gF, '면적 벡터');
   label('vec', '<b>A</b>', () => tip(fA));
-  const pierce = Array.from({ length: 16 }, () => part(gF, new THREE.SphereGeometry(0.05, 12, 8), { tone: 'faint', pal: 'blue', name: 'Field lines through it' }));
-  const fPerp = greyArrow(gF, 'E components'), fPar = greyArrow(gF, 'E components'), fEc = fieldArrow(gF, 'Field');
+  const pierce = Array.from({ length: 16 }, () => part(gF, new THREE.SphereGeometry(0.05, 12, 8), { tone: 'faint', pal: 'blue', name: '면을 지나는 전기력선' }));
+  const fPerp = greyArrow(gF, 'E의 성분'), fPar = greyArrow(gF, 'E의 성분'), fEc = fieldArrow(gF, '전기장');
   label('vec', 'E cos θ', () => ex(gF) > 0.3 && Math.abs(Math.cos(plateF.rotation.y)) > 0.25 ? tip(fPerp) : null);
   label('vec', 'E sin θ', () => ex(gF) > 0.3 && Math.sin(plateF.rotation.y) > 0.25 ? tip(fPar) : null);
   const shadow = loop(root, [V(0, -1, -1), V(0, 1, -1), V(0, 1, 1), V(0, -1, 1)]);
@@ -100,25 +100,25 @@ export function buildWorld(E) {
   // 2 · Gauss's law: a point charge in a sphere; a box beside a charge
   // ======================================================================
   const cG = V(STATIONS.gauss - 1.5, Y, 0);
-  const gG = asm('gauss', root, { title: 'A point charge in a Gaussian sphere', sub: 'the flux is q/ε₀ at any radius' });
+  const gG = asm('gauss', root, { title: '가우스 구면 속의 점전하', sub: '반지름과 상관없이 선속은 q/ε₀' });
   charge(gG, cG, 1);
   const sphG = new THREE.Group(); sphG.position.copy(cG); gG.add(sphG);
-  gpart(sphG, new THREE.SphereGeometry(1, 48, 32), 'Gaussian sphere');
+  gpart(sphG, new THREE.SphereGeometry(1, 48, 32), '가우스 구면');
   ring(sphG, 1, 'y'); ring(sphG, 1, 'z');
   { const pf = M.pointField(M.POINT.q, [0, 0, 0]);
     for (const d of fib(30)) polyline(root, M.fieldLine(pf, [d.x * 0.02, d.y * 0.02, d.z * 0.02], { step: 0.005, max: 56 }), cG); }
   const dirsG = fib(14);
   const eG = dirsG.map(() => fieldArrow(gG));
-  const dAG = dirsG.map(() => inkArrow(gG, 'Area elements dA'));
-  const tileG = dirsG.map(() => part(gG, box(0.36, 0.02, 0.36, 0.005), { tone: 'mid', pal: 'base', name: 'Area elements dA' }));
-  const rG = greyArrow(gG, 'Radius');
+  const dAG = dirsG.map(() => inkArrow(gG, '면적 요소 dA'));
+  const tileG = dirsG.map(() => part(gG, box(0.36, 0.02, 0.36, 0.005), { tone: 'mid', pal: 'base', name: '면적 요소 dA' }));
+  const rG = greyArrow(gG, '반지름');
   label('vec', 'r', () => tip(rG));
   label('vec blue', '<b>E</b>', () => tip(eG[9]));
   label('vec', 'd<b>A</b>', () => ex(gG) > 0.3 ? tip(dAG[9]) : null);
 
   // the box, with a charge just outside it
   const cB = V(STATIONS.gauss + 4.6, Y, 0);
-  const gB = asm('box', root, { title: 'A closed box, the charge outside', sub: 'what goes in comes out' });
+  const gB = asm('box', root, { title: '닫힌 상자, 바깥의 전하', sub: '들어간 만큼 나온다' });
   const qB = cB.clone().add(V(...M.BOX.at).multiplyScalar(D));
   charge(gB, qB, 1);
   { const pf = M.pointField(M.BOX.q, M.BOX.at);
@@ -127,7 +127,7 @@ export function buildWorld(E) {
   const faceDirs = [V(1, 0, 0), V(-1, 0, 0), V(0, 1, 0), V(0, -1, 0), V(0, 0, 1), V(0, 0, -1)];
   faceDirs.forEach((n, i) => {
     const geo = new THREE.PlaneGeometry(2 * h, 2 * h);
-    const m = gpart(gB, geo, 'Faces of the box', { pos: cB.clone().addScaledVector(n, h).toArray(), ex: n.clone().multiplyScalar(0.9).toArray() });
+    const m = gpart(gB, geo, '상자의 면', { pos: cB.clone().addScaledVector(n, h).toArray(), ex: n.clone().multiplyScalar(0.9).toArray() });
     m.quaternion.setFromUnitVectors(V(0, 0, 1), n);
     const rim = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: '#6c6c72' })); rim.userData = { noEdge: true }; m.add(rim);
     const v = faces[i];
@@ -138,29 +138,29 @@ export function buildWorld(E) {
   // 3 · an infinite line of charge
   // ======================================================================
   const cL = V(STATIONS.line, Y, 0);
-  const gL = asm('line', root, { title: 'A line of charge in a Gaussian cylinder', sub: 'only the curved side carries flux' });
-  part(root, xAxis(new THREE.CylinderGeometry(0.06, 0.06, 11, 20)), { tone: 'hi', name: 'Line of charge', pos: cL.toArray() });
-  dots(root, Array.from({ length: 44 }, (_, i) => V(cL.x - 5.375 + i * 0.25, Y, 0.06)), 'Line of charge', 0.035);
+  const gL = asm('line', root, { title: '가우스 원통 속의 선전하', sub: '곡면 옆면으로만 선속이 지난다' });
+  part(root, xAxis(new THREE.CylinderGeometry(0.06, 0.06, 11, 20)), { tone: 'hi', name: '선전하', pos: cL.toArray() });
+  dots(root, Array.from({ length: 44 }, (_, i) => V(cL.x - 5.375 + i * 0.25, Y, 0.06)), '선전하', 0.035);
   label('axis', '−∞', () => V(cL.x - 5.9, Y, 0)); label('axis', '+∞', () => V(cL.x + 6.3, Y, 0));
   label('tick', `λ = ${(M.LINE.lam * 1e9).toFixed(1)} nC/m`, () => V(cL.x + 5.2, Y + 0.3, 0));
   const cylL = new THREE.Group(); cylL.position.copy(cL); gL.add(cylL);
   const LL = M.LINE.L * D;
-  gpart(cylL, xAxis(new THREE.CylinderGeometry(1, 1, LL, 48, 1, true)), 'Curved side');
+  gpart(cylL, xAxis(new THREE.CylinderGeometry(1, 1, LL, 48, 1, true)), '곡면 옆면');
   const capsL = [1, -1].map(s => {
-    const cap = gpart(cylL, new THREE.CircleGeometry(1, 48).rotateY(Math.PI / 2), 'Caps', { pos: [s * LL / 2, 0, 0] });
+    const cap = gpart(cylL, new THREE.CircleGeometry(1, 48).rotateY(Math.PI / 2), '밑면', { pos: [s * LL / 2, 0, 0] });
     ring(cap, 1, 'x');
     return cap;
   });
   const eL = [], angL = [0, 60, 120, 180, 240, 300].map(a => a * deg);
   for (const x of [-1, 0, 1]) for (const a of angL) eL.push({ x, a, ar: fieldArrow(gL) });
   const capE = [];      // E on a cap lies in the cap: grey, tangent to it
-  for (const s of [1, -1]) for (const a of [30, 150, 270]) capE.push({ s, a: a * deg, ar: greyArrow(gL, 'Caps') });
-  const rL = greyArrow(gL, 'Radius');
+  for (const s of [1, -1]) for (const a of [30, 150, 270]) capE.push({ s, a: a * deg, ar: greyArrow(gL, '밑면') });
+  const rL = greyArrow(gL, '반지름');
   label('vec', 'r', () => tip(rL));
   label('vec blue', '<b>E</b>', () => tip(eL[7].ar));
-  label('tick', 'cap: Φ = 0', () => ex(gL) > 0.3 ? capsL[0].getWorldPosition(V()).add(V(0.4, 1.0, 0)) : null);
-  label('tick', 'cap: Φ = 0', () => ex(gL) > 0.3 ? capsL[1].getWorldPosition(V()).add(V(0.0, 1.0, 0)) : null);
-  label('tick', 'side: Φ = λL/ε₀', () => ex(gL) > 0.3 ? cL.clone().add(V(0.9, -2.0, 0)) : null);
+  label('tick', '밑면: Φ = 0', () => ex(gL) > 0.3 ? capsL[0].getWorldPosition(V()).add(V(0.4, 1.0, 0)) : null);
+  label('tick', '밑면: Φ = 0', () => ex(gL) > 0.3 ? capsL[1].getWorldPosition(V()).add(V(0.0, 1.0, 0)) : null);
+  label('tick', '옆면: Φ = λL/ε₀', () => ex(gL) > 0.3 ? cL.clone().add(V(0.9, -2.0, 0)) : null);
 
   // ======================================================================
   // 4 · a non-conducting sheet, and a conducting plate
@@ -168,9 +168,9 @@ export function buildWorld(E) {
   const pillbox = (g, c, rr, y0, y1, gap) => {
     const grp = new THREE.Group(); grp.position.copy(c); g.add(grp);
     const H = y1 - y0;
-    gpart(grp, new THREE.CylinderGeometry(rr, rr, H, 40, 1, true), 'Pillbox side', { pos: [0, (y0 + y1) / 2, 0] });
-    const top = gpart(grp, new THREE.CircleGeometry(rr, 40).rotateX(-Math.PI / 2), 'Pillbox caps', { pos: [0, y1, 0], ex: [0, gap, 0] });
-    const bot = gpart(grp, new THREE.CircleGeometry(rr, 40).rotateX(Math.PI / 2), 'Pillbox caps', { pos: [0, y0, 0], ex: [0, -gap, 0] });
+    gpart(grp, new THREE.CylinderGeometry(rr, rr, H, 40, 1, true), '납작한 원통 옆면', { pos: [0, (y0 + y1) / 2, 0] });
+    const top = gpart(grp, new THREE.CircleGeometry(rr, 40).rotateX(-Math.PI / 2), '납작한 원통 밑면', { pos: [0, y1, 0], ex: [0, gap, 0] });
+    const bot = gpart(grp, new THREE.CircleGeometry(rr, 40).rotateX(Math.PI / 2), '납작한 원통 밑면', { pos: [0, y0, 0], ex: [0, -gap, 0] });
     ring(top, rr, 'y'); ring(bot, rr, 'y');
     return { top, bot };
   };
@@ -178,26 +178,26 @@ export function buildWorld(E) {
   const grid3 = [-1.5, 1.5];
   // the sheet
   const cS = V(STATIONS.sheet, Y, 0), W2 = 2.2;
-  const gS = asm('sheet', root, { title: 'A charged sheet and a pillbox', sub: 'flux out of both caps' });
-  part(gS, box(2 * W2, 0.05, 2 * W2, 0.01), { tone: 'hi', name: 'Sheet', pos: cS.toArray() });
-  dots(gS, scatter(7, 90, cS.x - W2 + 0.1, cS.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y + 0.03), 'Sheet');
+  const gS = asm('sheet', root, { title: '대전된 면과 납작한 원통', sub: '두 밑면으로 선속이 나간다' });
+  part(gS, box(2 * W2, 0.05, 2 * W2, 0.01), { tone: 'hi', name: '면전하', pos: cS.toArray() });
+  dots(gS, scatter(7, 90, cS.x - W2 + 0.1, cS.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y + 0.03), '면전하');
   const pbS = pillbox(gS, cS, M.SHEET.pr * D, -0.8, 0.8, 0.8);
   const eS = []; for (const x of grid3) for (const z of grid3) for (const s of [1, -1]) eS.push({ x, z, s, ar: fieldArrow(gS) });
   label('vec blue', '<b>E</b>', () => tip(eS[0].ar)); label('vec blue', '<b>E</b>', () => tip(eS[1].ar));
   label('tick', 'σ', () => V(cS.x - W2 - 0.1, Y + 0.12, W2));
-  label('tick', 'top: EA', () => ex(gS) > 0.3 ? pbS.top.getWorldPosition(V()).add(V(-0.2, 0.25, 0)) : null);
-  label('tick', 'bottom: EA', () => ex(gS) > 0.3 ? pbS.bot.getWorldPosition(V()).add(V(-0.2, -0.3, 0)) : null);
-  label('tick', 'side: 0', () => ex(gS) > 0.3 ? cS.clone().add(V(-0.55, 0.45, 0)) : null);
+  label('tick', '윗면: EA', () => ex(gS) > 0.3 ? pbS.top.getWorldPosition(V()).add(V(-0.2, 0.25, 0)) : null);
+  label('tick', '아랫면: EA', () => ex(gS) > 0.3 ? pbS.bot.getWorldPosition(V()).add(V(-0.2, -0.3, 0)) : null);
+  label('tick', '옆면: 0', () => ex(gS) > 0.3 ? cS.clone().add(V(-0.55, 0.45, 0)) : null);
   // the plate
   const cP = V(STATIONS.plate, Y, 0), TP = M.PLATE.t * D;
-  const gP = asm('plate', root, { title: 'A charged metal plate', sub: 'flux out of one cap only' });
-  part(gP, box(2 * W2, TP, 2 * W2, 0.02), { tone: 'hi', name: 'Metal plate', pal: 'base', pos: cP.toArray() });
-  dots(gP, [...scatter(11, 90, cP.x - W2 + 0.1, cP.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y + TP / 2 + 0.02), ...scatter(12, 90, cP.x - W2 + 0.1, cP.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y - TP / 2 - 0.02)], 'Surface charge');
+  const gP = asm('plate', root, { title: '대전된 금속판', sub: '한 밑면으로만 선속이 나간다' });
+  part(gP, box(2 * W2, TP, 2 * W2, 0.02), { tone: 'hi', name: '금속판', pal: 'base', pos: cP.toArray() });
+  dots(gP, [...scatter(11, 90, cP.x - W2 + 0.1, cP.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y + TP / 2 + 0.02), ...scatter(12, 90, cP.x - W2 + 0.1, cP.x + W2 - 0.1, -W2 + 0.1, W2 - 0.1, Y - TP / 2 - 0.02)], '표면 전하');
   const pbP = pillbox(gP, cP, M.SHEET.pr * D, 0, TP / 2 + 0.8, 0.8);
   const eP = []; for (const x of grid3) for (const z of grid3) for (const s of [1, -1]) eP.push({ x, z, s, ar: fieldArrow(gP) });
   label('vec blue', '<b>E</b>', () => tip(eP[0].ar)); label('vec blue', '<b>E</b>', () => tip(eP[1].ar));
-  label('tick', 'top: EA', () => ex(gP) > 0.3 ? pbP.top.getWorldPosition(V()).add(V(-0.2, 0.25, 0)) : null);
-  label('tick', 'in the metal: E = 0', () => ex(gP) > 0.3 ? pbP.bot.getWorldPosition(V()).add(V(-0.2, -0.3, 0)) : null);
+  label('tick', '윗면: EA', () => ex(gP) > 0.3 ? pbP.top.getWorldPosition(V()).add(V(-0.2, 0.25, 0)) : null);
+  label('tick', '금속 안: E = 0', () => ex(gP) > 0.3 ? pbP.bot.getWorldPosition(V()).add(V(-0.2, -0.3, 0)) : null);
 
   // ======================================================================
   // spheres: conducting, insulating, ρ = br — a cutaway with a wedge removed
@@ -208,9 +208,9 @@ export function buildWorld(E) {
   function sphereScene(key, X, kind, meta) {
     const c = V(X, Y, 0), g = asm(key, root, meta);
     const mats = [fadeMat(kind === 'c' ? 'base' : 'paper'), fadeMat(kind === 'c' ? 'dark' : 'base')];
-    part(g, new THREE.SphereGeometry(R1, 64, 40, WEDGE[1], 2 * Math.PI - (WEDGE[1] - WEDGE[0])), { tone: 'hi', name: kind === 'c' ? 'Metal sphere' : 'Insulating sphere', mat: mats[0], pos: c.toArray() });
+    part(g, new THREE.SphereGeometry(R1, 64, 40, WEDGE[1], 2 * Math.PI - (WEDGE[1] - WEDGE[0])), { tone: 'hi', name: kind === 'c' ? '금속 구' : '절연체 구', mat: mats[0], pos: c.toArray() });
     for (const ph of WEDGE) {
-      for (const f of twoSided(g, new THREE.CircleGeometry(R1, 40, -Math.PI / 2, Math.PI), { tone: 'hi', name: 'Cut face', mat: mats[1], pos: c.toArray() })) f.rotation.y = Math.PI + ph;
+      for (const f of twoSided(g, new THREE.CircleGeometry(R1, 40, -Math.PI / 2, Math.PI), { tone: 'hi', name: '단면', mat: mats[1], pos: c.toArray() })) f.rotation.y = Math.PI + ph;
     }
     // charge marks: on the surface of the metal; through the volume (seen on the cut faces) otherwise
     let pts = [];
@@ -226,22 +226,22 @@ export function buildWorld(E) {
         }
       }
     }
-    dots(g, pts, kind === 'c' ? 'Surface charge' : 'Charge in the volume', 0.024);
+    dots(g, pts, kind === 'c' ? '표면 전하' : '부피 속 전하', 0.024);
     const gs = new THREE.Group(); gs.position.copy(c); g.add(gs);
-    gpart(gs, new THREE.SphereGeometry(1, 48, 32), 'Gaussian sphere');
+    gpart(gs, new THREE.SphereGeometry(1, 48, 32), '가우스 구면');
     ring(gs, 1, 'y'); ring(gs, 1, 'z');
     // what the Gaussian sphere encloses (shown when opened)
-    const enc = gpart(g, new THREE.SphereGeometry(1, 40, 28), 'Enclosed charge', { pos: c.toArray(), mat: shadeMat('red', { opacity: 0.32 }) });
+    const enc = gpart(g, new THREE.SphereGeometry(1, 40, 28), '감싼 전하', { pos: c.toArray(), mat: shadeMat('red', { opacity: 0.32 }) });
     const dirs = fib(18), arrows = dirs.map(() => fieldArrow(g));
-    const rad = greyArrow(g, 'Radius');
+    const rad = greyArrow(g, '반지름');
     label('vec', 'r', () => tip(rad));
     label('tick', 'R', () => c.clone().add(V(-R1 * 0.72 - 0.1, R1 * 0.72 + 0.1, 0)));
     label('vec blue', '<b>E</b>', () => { for (const i of [12, 4, 9, 15, 2]) if (arrows[i].visible) return tip(arrows[i]); return null; });
     return { c, g, gs, enc, dirs, arrows, rad, mats };
   }
-  const SC_ = sphereScene('csphere', STATIONS.csphere, 'c', { title: 'A charged metal sphere', sub: 'all its charge on the surface' });
-  const SI_ = sphereScene('isphere', STATIONS.isphere, 'i', { title: 'A uniformly charged insulating sphere', sub: 'charge all through it' });
-  const SN_ = sphereScene('nsphere', STATIONS.nsphere, 'n', { title: 'A sphere with ρ = br', sub: 'denser towards the edge' });
+  const SC_ = sphereScene('csphere', STATIONS.csphere, 'c', { title: '대전된 금속 구', sub: '모든 전하가 표면에' });
+  const SI_ = sphereScene('isphere', STATIONS.isphere, 'i', { title: '균일하게 대전된 절연체 구', sub: '속까지 고루 퍼진 전하' });
+  const SN_ = sphereScene('nsphere', STATIONS.nsphere, 'n', { title: 'ρ = br인 구', sub: '가장자리로 갈수록 빽빽하다' });
   label('tick', 'q<sub>enc</sub> = 0', () => ex(SC_.g) > 0.3 && SC_.gs.scale.x < R1 ? SC_.c.clone().add(V(0.15, -0.35, 0.6)) : null);
 
   // ======================================================================
@@ -251,43 +251,43 @@ export function buildWorld(E) {
   function rodScene(key, X, kind, meta) {
     const c = V(X, RY, 0), g = asm(key, root, meta);
     const mats = [fadeMat(kind === 'c' ? 'base' : 'paper'), fadeMat(kind === 'c' ? 'dark' : 'base')];
-    part(g, new THREE.CylinderGeometry(RR, RR, RL, 48, 1, true, TH[1], 2 * Math.PI - (TH[1] - TH[0])), { tone: 'hi', name: kind === 'c' ? 'Metal rod' : 'Insulating rod', mat: mats[0], pos: c.toArray() });
+    part(g, new THREE.CylinderGeometry(RR, RR, RL, 48, 1, true, TH[1], 2 * Math.PI - (TH[1] - TH[0])), { tone: 'hi', name: kind === 'c' ? '금속 막대' : '절연체 막대', mat: mats[0], pos: c.toArray() });
     for (const th of TH) {
-      for (const f of twoSided(g, new THREE.PlaneGeometry(RR, RL).translate(RR / 2, 0, 0), { tone: 'hi', name: 'Cut face', mat: mats[1], pos: c.toArray() })) f.rotation.y = th - Math.PI / 2;
+      for (const f of twoSided(g, new THREE.PlaneGeometry(RR, RL).translate(RR / 2, 0, 0), { tone: 'hi', name: '단면', mat: mats[1], pos: c.toArray() })) f.rotation.y = th - Math.PI / 2;
     }
     const arc = 2 * Math.PI - (TH[1] - TH[0]);
-    part(g, new THREE.CircleGeometry(RR, 36, TH[1] - Math.PI / 2, arc).rotateX(-Math.PI / 2), { tone: 'hi', name: 'Ends', mat: mats[1], pos: [c.x, c.y + RL / 2, c.z] });
-    part(g, new THREE.CircleGeometry(RR, 36, Math.PI / 2 - TH[0], arc).rotateX(Math.PI / 2), { tone: 'hi', name: 'Ends', mat: mats[1], pos: [c.x, c.y - RL / 2, c.z] });
+    part(g, new THREE.CircleGeometry(RR, 36, TH[1] - Math.PI / 2, arc).rotateX(-Math.PI / 2), { tone: 'hi', name: '끝면', mat: mats[1], pos: [c.x, c.y + RL / 2, c.z] });
+    part(g, new THREE.CircleGeometry(RR, 36, Math.PI / 2 - TH[0], arc).rotateX(Math.PI / 2), { tone: 'hi', name: '끝면', mat: mats[1], pos: [c.x, c.y - RL / 2, c.z] });
     const pts = [], r = rng(kind === 'c' ? 21 : 22);
     if (kind === 'c') { for (let i = 0; i < 150; i++) { const th = TH[1] + r() * (2 * Math.PI - (TH[1] - TH[0])); pts.push(V(c.x + (RR + 0.02) * Math.sin(th), c.y + (r() - 0.5) * RL * 0.96, c.z + (RR + 0.02) * Math.cos(th))); } }
     else for (const th of TH) { const u = V(Math.sin(th), 0, Math.cos(th)), n = V(Math.cos(th), 0, -Math.sin(th)).multiplyScalar(th === TH[0] ? 0.03 : -0.03);
       for (let i = 0; i < 60; i++) pts.push(c.clone().addScaledVector(u, RR * (0.05 + 0.9 * r())).add(V(0, (r() - 0.5) * RL * 0.96, 0)).add(n)); }
-    dots(g, pts, kind === 'c' ? 'Surface charge' : 'Charge in the volume', 0.028);
+    dots(g, pts, kind === 'c' ? '표면 전하' : '부피 속 전하', 0.028);
     const gs = new THREE.Group(); gs.position.copy(c); g.add(gs);
     const LG = M.ROD.L * D;
-    gpart(gs, new THREE.CylinderGeometry(1, 1, LG, 48, 1, true), 'Gaussian cylinder');
-    for (const s of [1, -1]) { gpart(gs, new THREE.CircleGeometry(1, 48).rotateX(-s * Math.PI / 2), 'Gaussian cylinder', { pos: [0, s * LG / 2, 0] }); ring(gs, 1, 'y', [0, s * LG / 2, 0]); }
-    const enc = gpart(g, new THREE.CylinderGeometry(1, 1, LG, 40), 'Enclosed charge', { pos: c.toArray(), mat: shadeMat('red', { opacity: 0.32 }) });
+    gpart(gs, new THREE.CylinderGeometry(1, 1, LG, 48, 1, true), '가우스 원통');
+    for (const s of [1, -1]) { gpart(gs, new THREE.CircleGeometry(1, 48).rotateX(-s * Math.PI / 2), '가우스 원통', { pos: [0, s * LG / 2, 0] }); ring(gs, 1, 'y', [0, s * LG / 2, 0]); }
+    const enc = gpart(g, new THREE.CylinderGeometry(1, 1, LG, 40), '감싼 전하', { pos: c.toArray(), mat: shadeMat('red', { opacity: 0.32 }) });
     const arrows = []; for (const y of [-0.45, 0.45]) for (const a of [0, 72, 144, 216, 288]) arrows.push({ y, a: (a - 25) * deg, ar: fieldArrow(g) });
-    const rad = greyArrow(g, 'Radius');
+    const rad = greyArrow(g, '반지름');
     label('vec', 'r', () => tip(rad));
     label('vec blue', '<b>E</b>', () => tip(arrows[7].ar));
-    label('tick', kind === 'c' ? 'metal' : 'insulator', () => c.clone().add(V(0.2, RL / 2 + 0.35, 0)));
+    label('tick', kind === 'c' ? '금속' : '절연체', () => c.clone().add(V(0.2, RL / 2 + 0.35, 0)));
     return { c, g, gs, enc, arrows, rad, mats, LG };
   }
-  const RC_ = rodScene('crod', STATIONS.crod, 'c', { title: 'A charged metal rod', sub: 'charge on the surface' });
-  const RI_ = rodScene('irod', STATIONS.irod, 'i', { title: 'A uniformly charged insulating rod', sub: 'charge all through it' });
+  const RC_ = rodScene('crod', STATIONS.crod, 'c', { title: '대전된 금속 막대', sub: '전하는 표면에' });
+  const RI_ = rodScene('irod', STATIONS.irod, 'i', { title: '균일하게 대전된 절연체 막대', sub: '속까지 고루 퍼진 전하' });
 
   // ======================================================================
   // 10 · a conductor in equilibrium: a metal shell in a uniform field
   // ======================================================================
   const cC = V(STATIONS.cage, Y, 0), RC = M.CAGE.R * D, RCi = RC - 0.12;
-  const gC = asm('cage', root, { title: 'A hollow metal shell in a field', sub: 'a Faraday cage' });
+  const gC = asm('cage', root, { title: '전기장 속의 속 빈 금속 껍질', sub: '패러데이 상자' });
   const cmats = [fadeMat('base'), fadeMat('dark'), fadeMat('base')];
   const wedgeLen = 2 * Math.PI - (WEDGE[1] - WEDGE[0]);
-  part(gC, new THREE.SphereGeometry(RC, 64, 40, WEDGE[1], wedgeLen), { tone: 'hi', name: 'Metal shell', mat: cmats[0], pos: cC.toArray() });
-  part(gC, new THREE.SphereGeometry(RCi, 64, 40, WEDGE[1], wedgeLen), { tone: 'mid', name: 'Metal shell', mat: cmats[2], pos: cC.toArray() });
-  for (const ph of WEDGE) for (const f of twoSided(gC, new THREE.RingGeometry(RCi, RC, 40, 1, -Math.PI / 2, Math.PI), { tone: 'hi', name: 'Metal shell', mat: cmats[1], pos: cC.toArray() })) f.rotation.y = Math.PI + ph;
+  part(gC, new THREE.SphereGeometry(RC, 64, 40, WEDGE[1], wedgeLen), { tone: 'hi', name: '금속 껍질', mat: cmats[0], pos: cC.toArray() });
+  part(gC, new THREE.SphereGeometry(RCi, 64, 40, WEDGE[1], wedgeLen), { tone: 'mid', name: '금속 껍질', mat: cmats[2], pos: cC.toArray() });
+  for (const ph of WEDGE) for (const f of twoSided(gC, new THREE.RingGeometry(RCi, RC, 40, 1, -Math.PI / 2, Math.PI), { tone: 'hi', name: '금속 껍질', mat: cmats[1], pos: cC.toArray() })) f.rotation.y = Math.PI + ph;
   { // field lines from the model: from upstream until they end on the shell, and back from downstream
     const R = M.CAGE.R, hit = p => M.len(p) < R, out = p => Math.abs(p[0]) > 0.44 || Math.abs(p[1]) > 0.3 || Math.abs(p[2]) > 0.3;
     for (const [a, b] of [[1, 0], [0, 1]]) for (let i = -5; i <= 5; i++) {
@@ -309,7 +309,7 @@ export function buildWorld(E) {
   label('tick', 'E = 0', () => cC.clone().add(V(0.25, -0.15, 0.5)));
   label('vec blue', '<b>E</b><sub>0</sub>', () => cC.clone().add(V(-4.3, 1.55, 0)));
   const gsC = new THREE.Group(); gsC.position.copy(cC); gC.add(gsC);
-  gpart(gsC, new THREE.SphereGeometry(RC - 0.06, 48, 32), 'Gaussian sphere in the metal');
+  gpart(gsC, new THREE.SphereGeometry(RC - 0.06, 48, 32), '금속 안의 가우스 구면');
   ring(gsC, RC - 0.06, 'y'); ring(gsC, RC - 0.06, 'z');
 
   // ---------- per-frame ----------

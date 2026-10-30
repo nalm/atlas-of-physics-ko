@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Momentum and Impulse · Atlas of Physics</title>
+<title>운동량과 충격량 · 물리 아틀라스</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../atlas.css">
 <link rel="stylesheet" href="../engine/book.css">
 <link rel="expect" href="#right" blocking="render">
@@ -25,13 +25,12 @@
   .chart .vk { stroke: var(--hi); stroke-width: 2; } .chart .vkh { fill: var(--hi); }
   .chart .vb { stroke: #3d7fcf; stroke-width: 2.2; } .chart .vbh { fill: #3d7fcf; }
 </style>
-<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body class="book-body">
   <header class="topbar">
-    <a href="../" class="brand">Atlas of Physics</a>
-    <span class="crumb">No. 05 · Momentum and impulse</span>
-    <nav class="dots" id="dots" aria-label="Pages"></nav>
+    <a href="../" class="brand">물리 아틀라스</a>
+    <span class="crumb">No. 05 · 운동량과 충격량</span>
+    <nav class="dots" id="dots" aria-label="페이지"></nav>
   </header>
 
   <div class="scroll-space" id="space"></div>
@@ -40,16 +39,16 @@
     <section class="page left" id="left" aria-live="polite">
       <article class="sheet" id="sheet"></article>
       <article class="plate" id="plate" hidden></article>
-      <footer class="folio"><span>Momentum and impulse</span><span id="folio">1</span></footer>
+      <footer class="folio"><span>운동량과 충격량</span><span id="folio">1</span></footer>
     </section>
 
     <section class="page right" id="right">
       <div class="figure">
-        <canvas id="gl" aria-label="Interactive figure: balls, carts, eggs, a pendulum, a crash and a bursting shell with their momentum arrows, then rods, plates, an L and a holed plate balanced at their centres of mass. Hover a scene and click it to break it down."></canvas>
+        <canvas id="gl" aria-label="인터랙티브 그림: 공, 수레, 달걀, 진자, 충돌하는 차량, 공중에서 터지는 포탄과 그 운동량 화살표, 이어서 질량 중심에서 균형을 이루는 막대, 판, L자 판, 구멍 뚫린 판. 장면에 마우스를 올리고 클릭하면 분해된다."></canvas>
         <div id="labels" aria-hidden="true"></div>
-        <div class="corner tl" id="figno">Fig. 1</div>
+        <div class="corner tl" id="figno">그림 1</div>
         <div class="corner tr" id="figtitle"></div>
-        <div class="corner bl" id="hint">Drag to turn · shift-drag to pan · click to break it down</div>
+        <div class="corner bl" id="hint">드래그해 회전 · Shift+드래그로 이동 · 클릭해 분해</div>
         <div class="corner br readout" id="readout"></div>
       </div>
     </section>
@@ -61,7 +60,7 @@
     <div class="spine" aria-hidden="true"></div>
   </main>
 
-  <p class="scroll-cue" id="cue">Scroll to turn the page</p>
+  <p class="scroll-cue" id="cue">스크롤해 페이지 넘기기</p>
   <script type="module" src="main.js"></script>
 </body>
 </html>

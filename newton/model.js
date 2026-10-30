@@ -31,13 +31,13 @@ export const T_SLIP = F_SMAX / RAMP;        // 2.45 s
 export const FRIC_T = 3.0;
 export function friction(t) {
   const F = RAMP * t;
-  if (t < T_SLIP) return { F, f: F, kind: 'static', x: 0, v: 0, a: 0 };
+  if (t < T_SLIP) return { F, f: F, kind: '정지', x: 0, v: 0, a: 0 };
   // sliding: m a = F − f_k, with F = RAMP·t; integrate from T_SLIP
   const s = t - T_SLIP;
   const a = (F - F_K) / M1;
   const v = (RAMP / (2 * M1)) * (t * t - T_SLIP * T_SLIP) - (F_K / M1) * s;
   const x = (RAMP / (6 * M1)) * (t ** 3 - T_SLIP ** 3) - (RAMP / (2 * M1)) * T_SLIP * T_SLIP * s - (F_K / (2 * M1)) * s * s;
-  return { F, f: F_K, kind: 'kinetic', x, v, a };
+  return { F, f: F_K, kind: '운동', x, v, a };
 }
 
 // third law: the 6.0 N push on A (2 kg) against B (4 kg), frictionless

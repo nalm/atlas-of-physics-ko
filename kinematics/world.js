@@ -13,9 +13,9 @@ export const A_SCALE = 0.08;       // arrow metres per m/s²
 const PZ = 1.3;                    // the projectile's pad sits in front of the first
 export const BOARD = { z: -1.0, w: 4.6, h: 5.75, pad: 0.35, tScale: 2.0, mid: Y0 + 2.6, vScale: 0.25 };
 export const BOARDS = [
-  { key: 'boardX', x0: -5.8, title: 'position', unit: 'm' },
-  { key: 'boardV', x0: -10.8, title: 'velocity', unit: 'm/s' },
-  { key: 'boardA', x0: -15.8, title: 'acceleration', unit: 'm/s²' },
+  { key: 'boardX', x0: -5.8, title: '위치', unit: 'm' },
+  { key: 'boardV', x0: -10.8, title: '속도', unit: 'm/s' },
+  { key: 'boardA', x0: -15.8, title: '가속도', unit: 'm/s²' },
 ];
 const tToX = (b, t) => b.x0 + BOARD.pad + t * BOARD.tScale;
 export const plotY = { boardX: q => Y0 + q, boardV: q => BOARD.mid + q * BOARD.vScale, boardA: q => BOARD.mid + q * BOARD.vScale };
@@ -48,10 +48,10 @@ export function buildWorld(E) {
   const pad2 = origin(PZ);
 
   // ---------- measuring staff: the position axis ----------
-  const staff = asm('staff', root, { title: 'Position axis', sub: 'where the ball is, measured from the launch point' });
+  const staff = asm('staff', root, { title: '위치 축', sub: '던진 지점에서 잰 공의 자리' });
   const SX = -0.72;
-  part(staff, cyl(0.014, 5.6, 12), { tone: 'hi', pal: 'ink', pos: [SX, 2.8, 0], name: 'Axis' });
-  part(staff, new THREE.ConeGeometry(0.05, 0.16, 20), { tone: 'hi', pal: 'ink', pos: [SX, 5.68, 0], name: 'Axis' });
+  part(staff, cyl(0.014, 5.6, 12), { tone: 'hi', pal: 'ink', pos: [SX, 2.8, 0], name: '축' });
+  part(staff, new THREE.ConeGeometry(0.05, 0.16, 20), { tone: 'hi', pal: 'ink', pos: [SX, 5.68, 0], name: '축' });
   const ticks = [];
   for (let i = 0; i <= 52; i++) {
     const yy = Y0 + i * 0.1, l = i % 10 === 0 ? 0.13 : i % 5 === 0 ? 0.08 : 0.045;
@@ -59,17 +59,17 @@ export function buildWorld(E) {
   }
   lines(staff, ticks, '#6e6e74');
   // a short mark that rides at the ball's height
-  const collar = part(staff, box(0.26, 0.022, 0.022, 0.006), { tone: 'hi', pal: 'ink', pos: [SX, Y0, 0], name: 'Height marker' });
+  const collar = part(staff, box(0.26, 0.022, 0.022, 0.006), { tone: 'hi', pal: 'ink', pos: [SX, Y0, 0], name: '높이 표시' });
   // displacement arrow beside the staff (from zero to the ball's height)
-  const dispArrow = arrow(staff, 'ink', { r: 0.018, head: 0.1, headR: 0.05, name: 'Displacement', tone: 'hi' });
+  const dispArrow = arrow(staff, 'ink', { r: 0.018, head: 0.1, headR: 0.05, name: '변위', tone: 'hi' });
 
   // ---------- the ball (straight up) ----------
-  const ball = asm('ball', root, { title: 'The ball', sub: 'thrown straight up at ' + M.VY0.toFixed(1) + ' m/s' });
-  const ballMesh = part(ball, new THREE.SphereGeometry(R, 48, 32), { tone: 'hi', name: 'Ball' });
-  const vArrowG = asm('vArrow', root, { title: 'Velocity', sub: 'how fast, and which way' });
-  const vArrow = arrow(vArrowG, 'ink', { name: 'Velocity' });
-  const aArrowG = asm('aArrow', root, { title: 'Acceleration', sub: 'how the velocity changes' });
-  const aArrow = arrow(aArrowG, 'red', { name: 'Acceleration' });
+  const ball = asm('ball', root, { title: '공', sub: M.VY0.toFixed(1) + ' m/s로 똑바로 위로 던짐' });
+  const ballMesh = part(ball, new THREE.SphereGeometry(R, 48, 32), { tone: 'hi', name: '공' });
+  const vArrowG = asm('vArrow', root, { title: '속도', sub: '얼마나 빠르게, 어느 쪽으로' });
+  const vArrow = arrow(vArrowG, 'ink', { name: '속도' });
+  const aArrowG = asm('aArrow', root, { title: '가속도', sub: '속도가 변하는 방식' });
+  const aArrow = arrow(aArrowG, 'red', { name: '가속도' });
 
   // strobe images every 0.2 s
   const ghostMat = shadeMat('paper', { opacity: 0.5 });
@@ -80,15 +80,15 @@ export function buildWorld(E) {
   }
 
   // ---------- projectile ----------
-  const proj = asm('proj', root, { title: 'The thrown-across ball', sub: `launched at ${M.V0P.toFixed(1)} m/s, ${M.ANGLE.toFixed(1)}° up` });
-  part(proj, new THREE.SphereGeometry(R, 48, 32), { tone: 'hi', name: 'Ball' });
-  const projVG = asm('projV', root, { title: 'Its velocity', sub: 'one arrow, two independent parts' });
-  const projV = arrow(projVG, 'ink', { name: 'Velocity' });
-  const vxA = arrow(projVG, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: 'Horizontal part vₓ', tone: 'mid' });
-  const vyA = arrow(projVG, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: 'Vertical part v_y', tone: 'mid' });
-  const projA = arrow(proj, 'red', { name: 'Acceleration' });
-  const shadow = asm('shadow', root, { title: 'Its floor shadow', sub: 'the horizontal motion alone' });
-  const shadowMesh = part(shadow, new THREE.CylinderGeometry(R, R, 0.008, 40), { tone: 'mid', pal: 'dark', name: 'Shadow' });
+  const proj = asm('proj', root, { title: '비스듬히 던진 공', sub: `${M.V0P.toFixed(1)} m/s, 위로 ${M.ANGLE.toFixed(1)}° 각도로 던짐` });
+  part(proj, new THREE.SphereGeometry(R, 48, 32), { tone: 'hi', name: '공' });
+  const projVG = asm('projV', root, { title: '이 공의 속도', sub: '화살표 하나, 독립적인 두 성분' });
+  const projV = arrow(projVG, 'ink', { name: '속도' });
+  const vxA = arrow(projVG, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: '수평 성분 vₓ', tone: 'mid' });
+  const vyA = arrow(projVG, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: '연직 성분 v_y', tone: 'mid' });
+  const projA = arrow(proj, 'red', { name: '가속도' });
+  const shadow = asm('shadow', root, { title: '바닥에 비친 그림자', sub: '수평 운동만 남은 모습' });
+  const shadowMesh = part(shadow, new THREE.CylinderGeometry(R, R, 0.008, 40), { tone: 'mid', pal: 'dark', name: '그림자' });
   const pGhosts = [], sGhosts = [];
   for (let k = 0; k * M.STROBE <= M.T + 1e-9; k++) {
     const g = new THREE.Mesh(new THREE.SphereGeometry(R * 0.98, 32, 20), ghostMat); g.userData = { tone: 0.2, ghost: true }; g.visible = false; root.add(g); pGhosts.push(g);
@@ -104,9 +104,9 @@ export function buildWorld(E) {
 
   // ---------- graph boards ----------
   const boards = BOARDS.map(b => {
-    const g = asm(b.key, root, { title: `${b.title[0].toUpperCase() + b.title.slice(1)} – time graph`, sub: b.key === 'boardX' ? 'its slope is the velocity' : b.key === 'boardV' ? 'its slope is the acceleration; its area is the displacement' : 'its area is the change in velocity' });
+    const g = asm(b.key, root, { title: `${b.title[0].toUpperCase() + b.title.slice(1)}–시간 그래프`, sub: b.key === 'boardX' ? '기울기가 곧 속도' : b.key === 'boardV' ? '기울기는 가속도, 넓이는 변위' : '넓이가 곧 속도 변화' });
     const cx = b.x0 + BOARD.w / 2;
-    part(g, box(BOARD.w, BOARD.h, 0.012, 0.004), { tone: 'faint', pal: 'board', pos: [cx, BOARD.h / 2 + 0.1, BOARD.z], name: 'Graph' });
+    part(g, box(BOARD.w, BOARD.h, 0.012, 0.004), { tone: 'faint', pal: 'board', pos: [cx, BOARD.h / 2 + 0.1, BOARD.z], name: '그래프' });
     const zf = BOARD.z + 0.008;
     const t0 = tToX(b, 0), t1 = tToX(b, M.T + 0.05);
     const zeroY = b.key === 'boardX' ? Y0 : BOARD.mid;
@@ -117,14 +117,14 @@ export function buildWorld(E) {
     else for (let q = -10; q <= 10; q += 2) if (q) grid.push(t0, plotY[b.key](q), zf, t1, plotY[b.key](q), zf);
     lines(g, grid, '#e4e4e0');
     // axes
-    part(g, box(t1 - t0 + 0.1, 0.022, 0.02, 0.005), { tone: 'hi', pal: 'ink', pos: [(t0 + t1) / 2, zeroY, zf], name: 'Time axis' });
-    part(g, box(0.022, BOARD.h - 0.5, 0.02, 0.005), { tone: 'hi', pal: 'ink', pos: [t0, 0.35 + (BOARD.h - 0.55) / 2, zf], name: 'Value axis' });
+    part(g, box(t1 - t0 + 0.1, 0.022, 0.02, 0.005), { tone: 'hi', pal: 'ink', pos: [(t0 + t1) / 2, zeroY, zf], name: '시간 축' });
+    part(g, box(0.022, BOARD.h - 0.5, 0.02, 0.005), { tone: 'hi', pal: 'ink', pos: [t0, 0.35 + (BOARD.h - 0.55) / 2, zf], name: '값 축' });
     // the curve, drawn as the ball flies
     const pts = []; for (let i = 0; i <= 240; i++) { const t = i / 240 * M.T; pts.push(V(tToX(b, t), plotY[b.key](fn[b.key](t)), zf + 0.01)); }
-    const curve = part(g, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 240, 0.03, 8), { tone: 'hi', pal: 'ink', name: 'Curve' });
-    const cursor = part(g, new THREE.SphereGeometry(0.075, 24, 16), { tone: 'hi', pal: 'ink', name: 'Now' });
+    const curve = part(g, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 240, 0.03, 8), { tone: 'hi', pal: 'ink', name: '곡선' });
+    const cursor = part(g, new THREE.SphereGeometry(0.075, 24, 16), { tone: 'hi', pal: 'ink', name: '현재' });
     // slope (tangent) and area, shown when the board is opened
-    const tangent = part(g, box(1.8, 0.03, 0.02, 0.01), { tone: 'hi', pal: 'red', name: 'Slope' });
+    const tangent = part(g, box(1.8, 0.03, 0.02, 0.01), { tone: 'hi', pal: 'red', name: '기울기' });
     const area = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: '#e5484d', transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }));
     area.userData = { noEdge: true }; g.add(area);
     return { ...b, g, curve, cursor, tangent, area, zf, zeroY };
@@ -229,8 +229,8 @@ function carModel(parent, name = 'Car') {
   part(g, box(4.2, 0.7, 1.8, 0.18), { tone: 'hi', pos: [0, 0.75, 0], name });
   part(g, box(2.2, 0.6, 1.6, 0.2), { tone: 'hi', pos: [-0.3, 1.38, 0], name });
   for (const x of [-1.35, 1.35]) for (const z of [-0.8, 0.8]) {
-    part(g, zAxis(new THREE.CylinderGeometry(0.36, 0.36, 0.26, 28)), { tone: 'mid', pal: 'dark', pos: [x, 0.36, z], name: 'Wheels' });
-    part(g, zAxis(new THREE.CylinderGeometry(0.17, 0.17, 0.28, 20)), { tone: 'mid', pos: [x, 0.36, z], name: 'Wheels' });
+    part(g, zAxis(new THREE.CylinderGeometry(0.36, 0.36, 0.26, 28)), { tone: 'mid', pal: 'dark', pos: [x, 0.36, z], name: '바퀴' });
+    part(g, zAxis(new THREE.CylinderGeometry(0.17, 0.17, 0.28, 20)), { tone: 'mid', pos: [x, 0.36, z], name: '바퀴' });
   }
   return g;
 }
@@ -238,7 +238,7 @@ function carModel(parent, name = 'Car') {
 function buildMore(root, asm) {
   const labels = [];
   const label = (cls, html, at, text) => labels.push({ cls, html, at, text });
-  const road = (x0, x1, z0, z1, y = 0.01) => part(root, box(x1 - x0, 0.02, z1 - z0, 0.005), { tone: 'lo', pal: 'board', pos: [(x0 + x1) / 2, y, (z0 + z1) / 2], name: 'Road' });
+  const road = (x0, x1, z0, z1, y = 0.01) => part(root, box(x1 - x0, 0.02, z1 - z0, 0.005), { tone: 'lo', pal: 'board', pos: [(x0 + x1) / 2, y, (z0 + z1) / 2], name: '도로' });
   const grid = [];
   for (let x = 22; x <= 108; x++) grid.push(x, 0.001, -4.5, x, 0.001, 4.5);
   for (let z = -4; z <= 4; z++) grid.push(22, 0.001, z, 108, 0.001, z);
@@ -250,18 +250,18 @@ function buildMore(root, asm) {
   const dashRoad = []; for (let x = RA + 0.5; x < RA + RW; x += 2) dashRoad.push(x, 0.025, 0, x + 1, 0.025, 0);
   lines(root, dashRoad, '#9a9aa0');
   const dashCar = dynLines(root, 5, '#9a9aa0');
-  const gR = asm('rainRoad', root, { title: 'Seen from the road', sub: 'the rain falls straight down; the car drives through it' });
+  const gR = asm('rainRoad', root, { title: '도로에서 본 모습', sub: '비는 똑바로 떨어지고, 자동차가 그 속을 달린다' });
   const carR = carModel(gR);
-  const vCG = arrow(gR, 'ink', { name: 'Car velocity' });
-  const vRGa = arrow(gR, 'ink', { name: 'Rain velocity' });
-  const gC = asm('rainCar', root, { title: 'Seen from the car', sub: 'the car is at rest; road and rain stream past' });
+  const vCG = arrow(gR, 'ink', { name: '자동차의 속도' });
+  const vRGa = arrow(gR, 'ink', { name: '비의 속도' });
+  const gC = asm('rainCar', root, { title: '자동차에서 본 모습', sub: '자동차는 정지해 있고, 도로와 비가 스쳐 지나간다' });
   const carC = carModel(gC); carC.position.set(CB + CW / 2, 0, 0);
-  const vRCa = arrow(gC, 'blue', { name: 'Rain velocity, from the car' });
-  const vGCa = arrow(gC, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: 'Road velocity, from the car', tone: 'mid' });
+  const vRCa = arrow(gC, 'blue', { name: '자동차에서 본 비의 속도' });
+  const vGCa = arrow(gC, 'dark', { r: 0.026, head: 0.13, headR: 0.07, name: '자동차에서 본 도로의 속도', tone: 'mid' });
   label('vec', 'v<sub>CG</sub>', () => tipOf(vCG, 0.3)); label('vec', 'v<sub>RG</sub>', () => tipOf(vRGa, 0.3));
   label('vec blue', 'v<sub>RC</sub>', () => tipOf(vRCa, 0.3)); label('vec grey', 'v<sub>GC</sub>', () => tipOf(vGCa, 0.3));
-  label('board', 'seen from the road', () => V(RA + 0.2, HTOP + 0.9, 0));
-  label('board', 'seen from the car', () => V(CB + 0.2, HTOP + 0.9, 0));
+  label('board', '도로에서 본 모습', () => V(RA + 0.2, HTOP + 0.9, 0));
+  label('board', '자동차에서 본 모습', () => V(CB + 0.2, HTOP + 0.9, 0));
   // drops: short streaks, each as long as the distance it moves in a 0.05 s exposure
   const dropMat = shadeMat('dark');
   const mkDrop = () => { const m = new THREE.Mesh(cyl(0.03, 1, 8), dropMat); m.userData = { tone: 0.4 }; root.add(m); return m; };
@@ -270,7 +270,7 @@ function buildMore(root, asm) {
   const dropsC = Array.from({ length: 50 }, (_, k) => ({ m: mkDrop(), u: rnd(k + 2000), z: -1.9 + 3.8 * rnd(k + 2500), ph: rnd(k + 2900) }));
   const inCar = (dx, y, z) => Math.abs(dx) < 2.15 && y < 1.75 && Math.abs(z) < 0.95;
   // the vector sum, tip to tail
-  const gS = asm('rainSum', root, { title: 'Adding the velocities', sub: 'v_RC = v_RG + v_GC, tip to tail' });
+  const gS = asm('rainSum', root, { title: '속도의 덧셈', sub: 'v_RC = v_RG + v_GC, 머리에 꼬리 잇기' });
   const TRI = V(CB + CW + 2.9, HTOP - 0.2, 0);
   const sRG = arrow(gS, 'ink', { name: 'v_RG' }), sGC = arrow(gS, 'ink', { name: 'v_GC' }), sRC = arrow(gS, 'blue', { name: 'v_RC' });
   const vRG = V(0, M.V_RG[1] * RAIN_V, 0), vGC = V(M.V_GC[0] * RAIN_V, 0, 0);
@@ -289,26 +289,26 @@ function buildMore(root, asm) {
   // ---------- 1.8 a river, two boats ----------
   const RX = ST.river, RHW = M.RIVER.w * RIV.s / 2;     // the water spans z = ±RHW
   const XL = RX - 7, XR = RX + 5.5;
-  const gW = asm('river', root, { title: 'The river', sub: 'the water moves; everything on it is carried along' });
-  part(gW, box(XR - XL, 0.04, 2 * RHW, 0.01), { tone: 'lo', pal: 'base', pos: [RX, 0.02, 0], name: 'Water' });
-  for (const sgn of [1, -1]) part(root, box(XR - XL, 0.12, 1.2, 0.02), { tone: 'mid', pal: 'paper', pos: [RX, 0.06, sgn * (RHW + 0.6)], name: 'Bank' });
+  const gW = asm('river', root, { title: '강', sub: '물이 움직이고, 그 위의 모든 것이 함께 실려 간다' });
+  part(gW, box(XR - XL, 0.04, 2 * RHW, 0.01), { tone: 'lo', pal: 'base', pos: [RX, 0.02, 0], name: '물' });
+  for (const sgn of [1, -1]) part(root, box(XR - XL, 0.12, 1.2, 0.02), { tone: 'mid', pal: 'paper', pos: [RX, 0.06, sgn * (RHW + 0.6)], name: '강가' });
   const floats = Array.from({ length: 30 }, (_, k) => {
-    const m = part(gW, new THREE.CylinderGeometry(0.07, 0.07, 0.02, 16), { tone: 'mid', pal: 'dark', name: 'Floating leaves' });
+    const m = part(gW, new THREE.CylinderGeometry(0.07, 0.07, 0.02, 16), { tone: 'mid', pal: 'dark', name: '떠 있는 나뭇잎' });
     return { m, u: rnd(k + 4000), z: (-0.92 + 1.84 * rnd(k + 4400)) * RHW };
   });
   const boatModel = (parent) => {
     const g = new THREE.Group(); parent.add(g);
-    part(g, box(0.62, 0.16, 0.3, 0.05), { tone: 'hi', pos: [-0.06, 0.12, 0], name: 'Boat' });
-    const bow = part(g, new THREE.CylinderGeometry(0.15, 0.15, 0.16, 3, 1, false), { tone: 'hi', pos: [0.33, 0.12, 0], name: 'Boat' });
+    part(g, box(0.62, 0.16, 0.3, 0.05), { tone: 'hi', pos: [-0.06, 0.12, 0], name: '배' });
+    const bow = part(g, new THREE.CylinderGeometry(0.15, 0.15, 0.16, 3, 1, false), { tone: 'hi', pos: [0.33, 0.12, 0], name: '배' });
     bow.scale.set(1, 1, 1.4); bow.rotation.y = Math.PI / 2;   // one corner of the prism points forward
     return g;
   };
-  const boats = [['boatA', 0, RX - 1.4, 'Aimed straight across', 'fastest crossing, but carried downstream'], ['boatB', M.AIM_UP, RX - 5.2, `Aimed ${(M.AIM_UP * 180 / Math.PI).toFixed(1)}° upstream`, 'slower, but lands straight across']].map(([key, phi, x0, title, sub]) => {
+  const boats = [['boatA', 0, RX - 1.4, '똑바로 건너편을 향함', '가장 빨리 건너지만 하류로 실려 감'], ['boatB', M.AIM_UP, RX - 5.2, `상류 쪽으로 ${(M.AIM_UP * 180 / Math.PI).toFixed(1)}° 향함`, '더 느리지만 정확히 맞은편에 닿음']].map(([key, phi, x0, title, sub]) => {
     const g = asm(key, root, { title, sub });
     const hull = boatModel(g);
-    const bw = arrow(g, 'ink', { r: 0.028, head: 0.14, headR: 0.075, name: 'v_BW: boat relative to water' });
-    const ws = arrow(g, 'dark', { r: 0.022, head: 0.12, headR: 0.06, name: 'v_WS: water relative to shore', tone: 'mid' });
-    const bs = arrow(g, 'blue', { r: 0.028, head: 0.14, headR: 0.075, name: 'v_BS: boat relative to shore' });
+    const bw = arrow(g, 'ink', { r: 0.028, head: 0.14, headR: 0.075, name: 'v_BW: 물에 대한 배의 속도' });
+    const ws = arrow(g, 'dark', { r: 0.022, head: 0.12, headR: 0.06, name: 'v_WS: 강가에 대한 물의 속도', tone: 'mid' });
+    const bs = arrow(g, 'blue', { r: 0.028, head: 0.14, headR: 0.075, name: 'v_BS: 강가에 대한 배의 속도' });
     const path = dynLines(root, 1, '#8a8a8f');
     const start = V(x0, 0.1, RHW);
     lines(root, [x0, 0.05, RHW, x0, 0.05, -RHW], '#c9c9cc');   // straight across, for reference
@@ -320,9 +320,9 @@ function buildMore(root, asm) {
     g.userData.focus = () => ({ target: [x0 + M.drift(phi) * RIV.s / 2, 0.2, 0], radius: 3.4 });
     return { key, phi, g, hull, bw, ws, bs, path, start };
   });
-  label('tick', 'straight across ↑', () => V(boats[0].start.x - 0.12, 0.05, RHW + 0.75));
-  label('tick', `aimed ${(M.AIM_UP * 180 / Math.PI).toFixed(0)}° upstream ↑`, () => V(boats[1].start.x - 0.12, 0.05, RHW + 0.75));
-  label('tick', `current ${M.RIVER.vw.toFixed(1)} m/s →`, () => V(XR - 0.3, 0.05, RHW - 0.35));
+  label('tick', '똑바로 건너편 ↑', () => V(boats[0].start.x - 0.12, 0.05, RHW + 0.75));
+  label('tick', `상류 쪽 ${(M.AIM_UP * 180 / Math.PI).toFixed(0)}° ↑`, () => V(boats[1].start.x - 0.12, 0.05, RHW + 0.75));
+  label('tick', `물살 ${M.RIVER.vw.toFixed(1)} m/s →`, () => V(XR - 0.3, 0.05, RHW - 0.35));
 
   // ---------- 1.9 a car pulling away: a = a0 − kt ----------
   const PX = ST.pull, S = PULLS.s;
@@ -331,32 +331,32 @@ function buildMore(root, asm) {
   for (let d = 0; d <= 45; d += 5) marks.push(PX + d * S, 0.025, -0.45, PX + d * S, 0.025, d % 10 ? -0.25 : 0.45);
   lines(root, marks, '#8a8a8f');
   for (let d = 0; d <= 40; d += 10) label('tick', d ? `${d} m` : '0', () => V(PX + d * S + 0.06, 0.03, 0.75));
-  const gP = asm('pull', root, { title: 'A car pulling away', sub: 'its acceleration fades: a = a₀ − kt' });
+  const gP = asm('pull', root, { title: '출발하는 자동차', sub: '가속도가 점점 줄어든다: a = a₀ − kt' });
   const carP = carModel(gP, 'Car'); carP.scale.setScalar(S);
-  const pV = arrow(gP, 'ink', { r: 0.02, head: 0.1, headR: 0.05, name: 'Velocity' });
-  const gPA = asm('pullA', root, { title: 'Its acceleration', sub: 'shrinking by k = 1.5 m/s² every second' });
-  const pA = arrow(gPA, 'red', { r: 0.02, head: 0.1, headR: 0.05, name: 'Acceleration' });
+  const pV = arrow(gP, 'ink', { r: 0.02, head: 0.1, headR: 0.05, name: '속도' });
+  const gPA = asm('pullA', root, { title: '자동차의 가속도', sub: '매초 k = 1.5 m/s²씩 줄어든다' });
+  const pA = arrow(gPA, 'red', { r: 0.02, head: 0.1, headR: 0.05, name: '가속도' });
   const ghostBox = (w, h, d) => { const l = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w, h, d)), new THREE.LineBasicMaterial({ color: '#bdbdc2' })); l.userData = { noEdge: true }; root.add(l); return l; };
   const pGhosts = Array.from({ length: Math.round(M.PULL.run / 0.5) + 1 }, () => ghostBox(4.2 * S, 1.7 * S, 1.8 * S));
   label('vec', 'v', () => tipOf(pV, 0.12)); label('vec red', 'a', () => tipOf(pA, 0.12));
 
   // ---------- 1.10 x(t) = At³ − Bt on a number line ----------
   const CX = ST.cube;
-  const gL = asm('cubeLine', root, { title: 'The number line', sub: 'position x, displacement and distance' });
-  part(gL, xAxis(cyl(0.014, 6.8, 12)), { tone: 'hi', pal: 'ink', pos: [CX, 0.02, 0], name: 'Axis' });
-  part(gL, xAxis(new THREE.ConeGeometry(0.05, 0.16, 20)), { tone: 'hi', pal: 'ink', pos: [CX + 3.48, 0.02, 0], name: 'Axis' });
+  const gL = asm('cubeLine', root, { title: '수직선', sub: '위치 x, 변위, 이동 거리' });
+  part(gL, xAxis(cyl(0.014, 6.8, 12)), { tone: 'hi', pal: 'ink', pos: [CX, 0.02, 0], name: '축' });
+  part(gL, xAxis(new THREE.ConeGeometry(0.05, 0.16, 20)), { tone: 'hi', pal: 'ink', pos: [CX + 3.48, 0.02, 0], name: '축' });
   const lt = []; for (let q = -6; q <= 6; q++) lt.push(CX + q * 0.5, 0.02, 0, CX + q * 0.5, 0.02, q % 2 ? 0.08 : 0.16);
   lines(gL, lt, '#6e6e74');
   for (let q = -3; q <= 3; q++) label('tick', q ? `${q < 0 ? '−' : ''}${Math.abs(q)} m` : '0', () => V(CX + q + 0.1, 0.02, 0.42));
   label('axis', '<i>x</i>', () => V(CX + 3.75, 0.05, 0.12));
-  const gB = asm('bead', root, { title: 'The particle', sub: 'x(t) = t³ − 3t' });
-  part(gB, new THREE.SphereGeometry(0.15, 40, 28), { tone: 'hi', name: 'Particle' });
-  const cV = arrow(root, 'ink', { r: 0.024, head: 0.12, headR: 0.06, name: 'Velocity' });
-  const cA = arrow(root, 'red', { r: 0.024, head: 0.12, headR: 0.06, name: 'Acceleration' });
+  const gB = asm('bead', root, { title: '입자', sub: 'x(t) = t³ − 3t' });
+  part(gB, new THREE.SphereGeometry(0.15, 40, 28), { tone: 'hi', name: '입자' });
+  const cV = arrow(root, 'ink', { r: 0.024, head: 0.12, headR: 0.06, name: '속도' });
+  const cA = arrow(root, 'red', { r: 0.024, head: 0.12, headR: 0.06, name: '가속도' });
   const cGhosts = Array.from({ length: Math.round(M.CUBE.run / 0.2) + 1 }, () => { const g = new THREE.Mesh(new THREE.SphereGeometry(0.147, 28, 18), shadeMat('paper', { opacity: 0.5 })); g.userData = { tone: 0.2, ghost: true }; root.add(g); return g; });
-  const dispL = arrow(gL, 'ink', { r: 0.016, head: 0.1, headR: 0.045, name: 'Displacement', tone: 'hi' });
+  const dispL = arrow(gL, 'ink', { r: 0.016, head: 0.1, headR: 0.045, name: '변위', tone: 'hi' });
   label('vec', 'v', () => tipOf(cV, 0.14)); label('vec red', 'a', () => tipOf(cA, 0.14));
-  label('mark', `turns at t = ${M.T_TURN.toFixed(2)} s`, () => V(CX + M.cx(M.T_TURN), 0.62, -0.4));
+  label('mark', `t = ${M.T_TURN.toFixed(2)} s에서 방향 전환`, () => V(CX + M.cx(M.T_TURN), 0.62, -0.4));
 
   // ---------- per-frame ----------
   function update2(s) {

@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Work, Energy and Power · Atlas of Physics</title>
+<title>일, 에너지, 일률 · 물리 아틀라스</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../atlas.css">
 <link rel="stylesheet" href="../engine/book.css">
 <link rel="expect" href="#right" blocking="render">
@@ -15,13 +15,12 @@
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/" } }
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body class="book-body">
   <header class="topbar">
-    <a href="../" class="brand">Atlas of Physics</a>
-    <span class="crumb">No. 04 · Work, energy and power</span>
-    <nav class="dots" id="dots" aria-label="Pages"></nav>
+    <a href="../" class="brand">물리 아틀라스</a>
+    <span class="crumb">No. 04 · 일, 에너지, 일률</span>
+    <nav class="dots" id="dots" aria-label="페이지"></nav>
   </header>
 
   <div class="scroll-space" id="space"></div>
@@ -30,16 +29,16 @@
     <section class="page left" id="left" aria-live="polite">
       <article class="sheet" id="sheet"></article>
       <article class="plate" id="plate" hidden></article>
-      <footer class="folio"><span>Work, energy and power</span><span id="folio">1</span></footer>
+      <footer class="folio"><span>일, 에너지, 일률</span><span id="folio">1</span></footer>
     </section>
 
     <section class="page right" id="right">
       <div class="figure">
-        <canvas id="gl" aria-label="Interactive figure: simple objects gaining, storing and losing energy. Hover a scene and click it to break it down."></canvas>
+        <canvas id="gl" aria-label="인터랙티브 그림: 에너지를 얻고, 저장하고, 잃는 간단한 물체들. 장면에 마우스를 올리고 클릭하면 분해해 볼 수 있다."></canvas>
         <div id="labels" aria-hidden="true"></div>
-        <div class="corner tl" id="figno">Fig. 1</div>
+        <div class="corner tl" id="figno">그림 1</div>
         <div class="corner tr" id="figtitle"></div>
-        <div class="corner bl" id="hint">Drag to turn · shift-drag to pan · click to break it down</div>
+        <div class="corner bl" id="hint">드래그해 회전 · Shift+드래그로 이동 · 클릭해 분해</div>
         <div class="corner br readout" id="readout"></div>
       </div>
     </section>
@@ -51,7 +50,7 @@
     <div class="spine" aria-hidden="true"></div>
   </main>
 
-  <p class="scroll-cue" id="cue">Scroll to turn the page</p>
+  <p class="scroll-cue" id="cue">스크롤해 페이지 넘기기</p>
   <script type="module" src="main.js"></script>
 </body>
 </html>

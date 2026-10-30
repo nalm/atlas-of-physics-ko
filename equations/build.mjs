@@ -17,7 +17,8 @@ for (const c of CHAPTERS) {
   const src = fs.readFileSync(path.join(ROOT, c, 'pages.js'), 'utf8');
   const list = [...src.matchAll(/kicker:\s*'([^']*)',\s*title:\s*'([^']*)'/g)];
   list.forEach(([, k, t], i) => {
-    const no = k.startsWith('Chapter') ? 'Ch. ' + k.split(' ')[1] : k.split(' ')[0];
+    const ko = k.match(/^(\d+)장/);
+    const no = ko ? ko[1] + '장' : k.startsWith('Chapter') ? k.split(' ')[1] + '장' : k.split(' ')[0];
     pages[`${c}/${i}`] = [no, t];
   });
 }
@@ -33,7 +34,7 @@ let links = 0;
 const chips = refs => {
   if (refs === null) return '';                      // math reference rows: no chips, no mark
   const list = refs.split(/\s+/).filter(Boolean);
-  if (!list.length) return '<span class="none">not shown yet</span>';
+  if (!list.length) return '<span class="none">아직 없음</span>';
   return list.map(r => {
     if (!pages[r]) throw new Error('unknown page ' + r);
     const [c, i] = r.split('/'); links++;
@@ -45,269 +46,269 @@ const chips = refs => {
 // ---------- the sheets ----------
 // constants: [name, value markup, refs]; rows: [equation markup, atlas label, refs ('' = not shown yet, null = math)]
 // Groups with `same` are on that sheet too, identical to the group linked.
-const G_CONST = ['Universal gravitational constant', '{G} = 6.67 × 10^{−11} m^{3}/(kg·s^{2}) = 6.67 × 10^{−11} N·m^{2}/kg^{2}', 'circular/7 circular/8'];
-const G_ACC = ['Magnitude of the acceleration due to gravity at Earth’s surface', '{g} = 9.8 m/s^{2}', 'kinematics/3 circular/7'];
-const G_FIELD = ['Magnitude of the gravitational field strength at Earth’s surface', '{g} = 9.8 N/kg', 'circular/7'];
-const PREFIXES = [['10^{12}', 'tera', 'T'], ['10^{9}', 'giga', 'G'], ['10^{6}', 'mega', 'M'], ['10^{3}', 'kilo', 'k'], ['10^{−2}', 'centi', 'c'],
-  ['10^{−3}', 'milli', 'm'], ['10^{−6}', 'micro', 'μ'], ['10^{−9}', 'nano', 'n'], ['10^{−12}', 'pico', 'p']];
+const G_CONST = ['만유인력 상수', '{G} = 6.67 × 10^{−11} m^{3}/(kg·s^{2}) = 6.67 × 10^{−11} N·m^{2}/kg^{2}', 'circular/7 circular/8'];
+const G_ACC = ['지표면에서 중력 가속도의 크기', '{g} = 9.8 m/s^{2}', 'kinematics/3 circular/7'];
+const G_FIELD = ['지표면에서 중력장 세기의 크기', '{g} = 9.8 N/kg', 'circular/7'];
+const PREFIXES = [['10^{12}', '테라', 'T'], ['10^{9}', '기가', 'G'], ['10^{6}', '메가', 'M'], ['10^{3}', '킬로', 'k'], ['10^{−2}', '센티', 'c'],
+  ['10^{−3}', '밀리', 'm'], ['10^{−6}', '마이크로', 'μ'], ['10^{−9}', '나노', 'n'], ['10^{−12}', '피코', 'p']];
 const TRIG = [['θ', '0°', '30°', '37°', '45°', '53°', '60°', '90°'],
   ['sin θ', '0', '1/2', '3/5', '√2/2', '4/5', '√3/2', '1'],
   ['cos θ', '1', '√3/2', '4/5', '√2/2', '3/5', '1/2', '0'],
   ['tan θ', '0', '√3/3', '3/4', '1', '4/3', '√3', '∞']];
-const MECH_VARS_L = '{a} = acceleration · {d} = distance · {E} = energy · {f} = frequency · {F} = force · {J} = impulse · {k} = spring constant · {K} = kinetic energy · ℓ = length · {m} = mass · {M} = mass · {p} = momentum · {P} = power · {r} = radius, distance, or position · {t} = time · {T} = period · {U} = potential energy · {v} = velocity or speed · {W} = work · {x} = position or distance · {y} = vertical position · λ = linear mass density · μ = coefficient of friction';
-const MECH_VARS_R = '{a} = acceleration · {d} = distance · {f} = frequency · {F} = force · {I} = rotational inertia · {k} = spring constant · {K} = kinetic energy · ℓ = length · {L} = angular momentum · {m} = mass · {M} = mass · {p} = momentum · {r} = radius, distance, or position · {t} = time · {T} = period · {v} = velocity or speed · {W} = work · {x} = position or distance · α = angular acceleration · θ = angular position · τ = torque · φ = phase angle · ω = angular frequency or angular speed';
+const MECH_VARS_L = '{a} = 가속도 · {d} = 거리 · {E} = 에너지 · {f} = 진동수 · {F} = 힘 · {J} = 충격량 · {k} = 용수철 상수 · {K} = 운동 에너지 · ℓ = 길이 · {m} = 질량 · {M} = 질량 · {p} = 운동량 · {P} = 일률 · {r} = 반지름, 거리 또는 위치 · {t} = 시간 · {T} = 주기 · {U} = 퍼텐셜 에너지 · {v} = 속도 또는 속력 · {W} = 일 · {x} = 위치 또는 거리 · {y} = 연직 위치 · λ = 선질량 밀도 · μ = 마찰 계수';
+const MECH_VARS_R = '{a} = 가속도 · {d} = 거리 · {f} = 진동수 · {F} = 힘 · {I} = 관성 모멘트 · {k} = 용수철 상수 · {K} = 운동 에너지 · ℓ = 길이 · {L} = 각운동량 · {m} = 질량 · {M} = 질량 · {p} = 운동량 · {r} = 반지름, 거리 또는 위치 · {t} = 시간 · {T} = 주기 · {v} = 속도 또는 속력 · {W} = 일 · {x} = 위치 또는 거리 · α = 각가속도 · θ = 각위치 · τ = 돌림힘 · φ = 위상각 · ω = 각진동수 또는 각속력';
 
 const SHEETS = [
   {
-    id: 'physics-1', nav: 'Physics 1', title: 'AP Physics 1', sub: 'Algebra-based · effective fall 2024',
+    id: 'physics-1', nav: '물리 1', title: 'AP 물리 1', sub: '대수 기반 · 2024년 가을부터 적용',
     constants: [
       G_CONST,
-      ['1 atmosphere of pressure', '1 atm = 1.0 × 10^{5} N/m^{2} = 1.0 × 10^{5} Pa', 'fluids/2'],
+      ['1기압', '1 atm = 1.0 × 10^{5} N/m^{2} = 1.0 × 10^{5} Pa', 'fluids/2'],
       G_ACC, G_FIELD,
     ],
-    units: [['hertz', 'Hz'], ['joule', 'J'], ['kilogram', 'kg'], ['meter', 'm'], ['newton', 'N'], ['pascal', 'Pa'], ['second', 's'], ['watt', 'W']],
-    conventions: ['The frame of reference of any problem is assumed to be inertial unless otherwise stated.',
-      'Air resistance is assumed to be negligible unless otherwise stated.',
-      'Springs and strings are assumed to be ideal unless otherwise stated.',
-      'Fluids are assumed to be ideal, and pipes are assumed to be completely filled by fluid, unless otherwise stated.'],
+    units: [['헤르츠', 'Hz'], ['줄', 'J'], ['킬로그램', 'kg'], ['미터', 'm'], ['뉴턴', 'N'], ['파스칼', 'Pa'], ['초', 's'], ['와트', 'W']],
+    conventions: ['별도 언급이 없으면 모든 문제의 기준틀은 관성 기준틀로 가정한다.',
+      '별도 언급이 없으면 공기 저항은 무시한다.',
+      '별도 언급이 없으면 용수철과 줄은 이상적이라고 가정한다.',
+      '별도 언급이 없으면 유체는 이상 유체이고, 관은 유체로 완전히 채워져 있다고 가정한다.'],
     groups: [
-      { h: 'Geometry and trigonometry', id: 'geometry', vars: '{A} = area · {b} = base · {C} = circumference · {h} = height · ℓ = length · {r} = radius · {s} = arc length · {S} = surface area · {V} = volume · {w} = width · θ = angle',
+      { h: '기하와 삼각법', id: 'geometry', vars: '{A} = 넓이 · {b} = 밑변 · {C} = 둘레 · {h} = 높이 · ℓ = 길이 · {r} = 반지름 · {s} = 호의 길이 · {S} = 겉넓이 · {V} = 부피 · {w} = 너비 · θ = 각',
         rows: [
-          ['{A} = {b}{h}', 'Rectangle', null],
-          ['{A} = ½{b}{h}', 'Triangle', 'energy/5 momentum/10'],
-          ['{A} = π{r}^{2} &nbsp; {C} = 2π{r} &nbsp; {s} = {r}θ', 'Circle', 'circular/0 fluids/6 circular/6 rotation/1'],
-          ['{V} = ℓ{w}{h}', 'Rectangular solid', 'fluids/0'],
-          ['{V} = π{r}^{2}ℓ &nbsp; {S} = 2π{r}ℓ + 2π{r}^{2}', 'Cylinder', 'gauss/2 gauss/6'],
-          ['{V} = <sup>4</sup>⁄<sub>3</sub>π{r}^{3} &nbsp; {S} = 4π{r}^{2}', 'Sphere', 'gauss/1 gauss/5'],
-          ['{a}^{2} + {b}^{2} = {c}^{2} &nbsp; sin θ = {a}/{c} &nbsp; cos θ = {b}/{c} &nbsp; tan θ = {a}/{b}', 'Right triangle', 'kinematics/7 kinematics/8 newton/10 momentum/7'],
+          ['{A} = {b}{h}', '직사각형', null],
+          ['{A} = ½{b}{h}', '삼각형', 'energy/5 momentum/10'],
+          ['{A} = π{r}^{2} &nbsp; {C} = 2π{r} &nbsp; {s} = {r}θ', '원', 'circular/0 fluids/6 circular/6 rotation/1'],
+          ['{V} = ℓ{w}{h}', '직육면체', 'fluids/0'],
+          ['{V} = π{r}^{2}ℓ &nbsp; {S} = 2π{r}ℓ + 2π{r}^{2}', '원기둥', 'gauss/2 gauss/6'],
+          ['{V} = <sup>4</sup>⁄<sub>3</sub>π{r}^{3} &nbsp; {S} = 4π{r}^{2}', '구', 'gauss/1 gauss/5'],
+          ['{a}^{2} + {b}^{2} = {c}^{2} &nbsp; sin θ = {a}/{c} &nbsp; cos θ = {b}/{c} &nbsp; tan θ = {a}/{b}', '직각삼각형', 'kinematics/7 kinematics/8 newton/10 momentum/7'],
         ] },
-      { h: 'Mechanics and fluids · left column', vars: '{a} = acceleration · {d} = distance · {E} = energy · {F} = force · {J} = impulse · {k} = spring constant · {K} = kinetic energy · {m} = mass · {p} = momentum · {P} = power · {r} = radius or distance · {t} = time · {U} = potential energy · {v} = velocity or speed · {W} = work · {x} = position · {y} = vertical position · θ = angle · μ = coefficient of friction',
+      { h: '역학과 유체 · 왼쪽 열', vars: '{a} = 가속도 · {d} = 거리 · {E} = 에너지 · {F} = 힘 · {J} = 충격량 · {k} = 용수철 상수 · {K} = 운동 에너지 · {m} = 질량 · {p} = 운동량 · {P} = 일률 · {r} = 반지름 또는 거리 · {t} = 시간 · {U} = 퍼텐셜 에너지 · {v} = 속도 또는 속력 · {W} = 일 · {x} = 위치 · {y} = 연직 위치 · θ = 각 · μ = 마찰 계수',
         rows: [
-          ['{v}_{{x}} = {v}_{{x}0} + {a}_{{x}}{t}', 'Velocity at constant acceleration', 'kinematics/5 kinematics/3'],
-          ['{x} = {x}_{0} + {v}_{{x}0}{t} + ½{a}_{{x}}{t}^{2}', 'Position at constant acceleration', 'kinematics/5 kinematics/6 electrostatics/8'],
-          ['{v}_{{x}}^{2} = {v}_{{x}0}^{2} + 2{a}_{{x}}({x} − {x}_{0})', 'Velocity without time', 'kinematics/5'],
-          ['!{x}_{cm} = Σ{m}_{{i}}!{x}_{{i}} / Σ{m}_{{i}}', 'Centre of mass', 'newton/8 momentum/8 momentum/11'],
-          ['!{a}_{sys} = Σ!{F} / {m}_{sys} = !{F}_{net} / {m}_{sys}', 'Newton’s second law', 'newton/4 newton/9 circular/1'],
-          ['|!{F}_{{g}}| = {G}{m}_{1}{m}_{2} / {r}^{2}', 'Universal gravitation', 'circular/7 circular/8'],
-          ['|!{F}_{{f}}| ≤ |μ!{F}_{{N}}|', 'Friction', 'newton/6 circular/2 energy/10 rotation/4 rotation/10'],
-          ['!{F}_{{s}} = −{k}Δ!{x}', 'Hooke’s law: spring force', 'energy/5 oscillations/1 oscillations/4'],
-          ['{a}_{{c}} = {v}^{2} / {r}', 'Centripetal acceleration', 'circular/0 circular/1 circular/3 circular/4 circular/5 circular/8 rotation/1'],
-          ['{K} = ½{m}{v}^{2}', 'Kinetic energy', 'energy/3 energy/1 momentum/0'],
-          ['{W} = {F}_{∥}{d} = {F}{d} cos θ', 'Work by a constant force', 'energy/0 energy/2 rotation/8'],
-          ['Δ{K} = Σ{W}_{{i}} = Σ{F}_{∥,{i}}{d}_{{i}}', 'Work–energy theorem', 'energy/3 energy/1'],
-          ['{U}_{{s}} = ½{k}(Δ{x})^{2}', 'Spring potential energy', 'energy/5 oscillations/3 oscillations/11'],
-          ['{U}_{{G}} = −{G}{m}_{1}{m}_{2} / {r}', 'Gravitational potential energy, any distance', 'circular/10 circular/11 circular/12'],
-          ['Δ{U}_{{g}} = {m}{g}Δ{y}', 'Gravitational potential energy near the surface', 'energy/4 energy/7 circular/11 momentum/6'],
-          ['{P}_{avg} = {W} / Δ{t} = Δ{E} / Δ{t}', 'Average power', 'energy/11'],
-          ['{P}_{inst} = {F}_{∥}{v} = {F}{v} cos θ', 'Instantaneous power', 'energy/11 induction/6'],
-          ['!{p} = {m}!{v}', 'Momentum', 'momentum/0 momentum/3'],
-          ['!{F}_{net} = Δ!{p} / Δ{t} = {m}Δ!{v} / Δ{t} = {m}!{a}', 'Net force and change of momentum', 'momentum/1 momentum/2'],
-          ['!{J} = !{F}_{avg}Δ{t} = Δ!{p}', 'Impulse', 'momentum/1 momentum/2 momentum/6'],
-          ['!{v}_{cm} = Σ!{p}_{{i}} / Σ{m}_{{i}} = Σ{m}_{{i}}!{v}_{{i}} / Σ{m}_{{i}}', 'Velocity of the centre of mass', 'momentum/3 momentum/8 newton/8'],
+          ['{v}_{{x}} = {v}_{{x}0} + {a}_{{x}}{t}', '등가속도 운동의 속도', 'kinematics/5 kinematics/3'],
+          ['{x} = {x}_{0} + {v}_{{x}0}{t} + ½{a}_{{x}}{t}^{2}', '등가속도 운동의 위치', 'kinematics/5 kinematics/6 electrostatics/8'],
+          ['{v}_{{x}}^{2} = {v}_{{x}0}^{2} + 2{a}_{{x}}({x} − {x}_{0})', '시간이 없는 속도 식', 'kinematics/5'],
+          ['!{x}_{cm} = Σ{m}_{{i}}!{x}_{{i}} / Σ{m}_{{i}}', '질량 중심', 'newton/8 momentum/8 momentum/11'],
+          ['!{a}_{sys} = Σ!{F} / {m}_{sys} = !{F}_{net} / {m}_{sys}', '뉴턴 제2법칙', 'newton/4 newton/9 circular/1'],
+          ['|!{F}_{{g}}| = {G}{m}_{1}{m}_{2} / {r}^{2}', '만유인력', 'circular/7 circular/8'],
+          ['|!{F}_{{f}}| ≤ |μ!{F}_{{N}}|', '마찰력', 'newton/6 circular/2 energy/10 rotation/4 rotation/10'],
+          ['!{F}_{{s}} = −{k}Δ!{x}', '훅 법칙: 탄성력', 'energy/5 oscillations/1 oscillations/4'],
+          ['{a}_{{c}} = {v}^{2} / {r}', '구심 가속도', 'circular/0 circular/1 circular/3 circular/4 circular/5 circular/8 rotation/1'],
+          ['{K} = ½{m}{v}^{2}', '운동 에너지', 'energy/3 energy/1 momentum/0'],
+          ['{W} = {F}_{∥}{d} = {F}{d} cos θ', '일정한 힘이 한 일', 'energy/0 energy/2 rotation/8'],
+          ['Δ{K} = Σ{W}_{{i}} = Σ{F}_{∥,{i}}{d}_{{i}}', '일-에너지 정리', 'energy/3 energy/1'],
+          ['{U}_{{s}} = ½{k}(Δ{x})^{2}', '탄성 퍼텐셜 에너지', 'energy/5 oscillations/3 oscillations/11'],
+          ['{U}_{{G}} = −{G}{m}_{1}{m}_{2} / {r}', '중력 퍼텐셜 에너지 (임의의 거리)', 'circular/10 circular/11 circular/12'],
+          ['Δ{U}_{{g}} = {m}{g}Δ{y}', '지표면 근처의 중력 퍼텐셜 에너지', 'energy/4 energy/7 circular/11 momentum/6'],
+          ['{P}_{avg} = {W} / Δ{t} = Δ{E} / Δ{t}', '평균 일률', 'energy/11'],
+          ['{P}_{inst} = {F}_{∥}{v} = {F}{v} cos θ', '순간 일률', 'energy/11 induction/6'],
+          ['!{p} = {m}!{v}', '운동량', 'momentum/0 momentum/3'],
+          ['!{F}_{net} = Δ!{p} / Δ{t} = {m}Δ!{v} / Δ{t} = {m}!{a}', '알짜힘과 운동량 변화', 'momentum/1 momentum/2'],
+          ['!{J} = !{F}_{avg}Δ{t} = Δ!{p}', '충격량', 'momentum/1 momentum/2 momentum/6'],
+          ['!{v}_{cm} = Σ!{p}_{{i}} / Σ{m}_{{i}} = Σ{m}_{{i}}!{v}_{{i}} / Σ{m}_{{i}}', '질량 중심의 속도', 'momentum/3 momentum/8 newton/8'],
         ] },
-      { h: 'Mechanics and fluids · right column', vars: '{a} = acceleration · {A} = amplitude or area · {d} = distance · {f} = frequency · {F} = force · {h} = height · {I} = rotational inertia · {k} = spring constant · {K} = kinetic energy · ℓ = length · {L} = angular momentum · {m} = mass · {M} = mass · {P} = pressure · {r} = radius or distance · {t} = time · {T} = period · {v} = velocity or speed · {V} = volume · {W} = work · {x} = position · {y} = vertical position · α = angular acceleration · θ = angle or angular position · ρ = density · τ = torque · ω = angular speed',
+      { h: '역학과 유체 · 오른쪽 열', vars: '{a} = 가속도 · {A} = 진폭 또는 넓이 · {d} = 거리 · {f} = 진동수 · {F} = 힘 · {h} = 높이 · {I} = 관성 모멘트 · {k} = 용수철 상수 · {K} = 운동 에너지 · ℓ = 길이 · {L} = 각운동량 · {m} = 질량 · {M} = 질량 · {P} = 압력 · {r} = 반지름 또는 거리 · {t} = 시간 · {T} = 주기 · {v} = 속도 또는 속력 · {V} = 부피 · {W} = 일 · {x} = 위치 · {y} = 연직 위치 · α = 각가속도 · θ = 각 또는 각위치 · ρ = 밀도 · τ = 돌림힘 · ω = 각속력',
         rows: [
-          ['ω = ω_{0} + α{t}', 'Angular velocity at constant α', 'rotation/0'],
-          ['θ = θ_{0} + ω_{0}{t} + ½α{t}^{2}', 'Angle at constant α', 'rotation/0'],
-          ['ω^{2} = ω_{0}^{2} + 2α(θ − θ_{0})', 'Angular velocity without time', 'rotation/0'],
-          ['{v} = {r}ω', 'Linear and angular speed', 'circular/6 rotation/1 rotation/9'],
-          ['{a}_{{T}} = {r}α', 'Tangential acceleration', 'rotation/1 rotation/11'],
-          ['τ = {r}_{⊥}{F} = {r}{F} sin θ', 'Torque', 'rotation/2 rotation/3 rotation/4 oscillations/9'],
-          ['{I} = Σ{m}_{{i}}{r}_{{i}}^{2}', 'Rotational inertia', 'rotation/5 rotation/6'],
-          ['{I}′ = {I}_{cm} + {M}{d}^{2}', 'Parallel-axis theorem', 'rotation/7 oscillations/9'],
-          ['α_{sys} = Στ / {I}_{sys} = τ_{net} / {I}_{sys}', 'Newton’s second law for rotation', 'rotation/5 rotation/7 rotation/10 rotation/11'],
-          ['{K} = ½{I}ω^{2}', 'Rotational kinetic energy', 'rotation/9 rotation/13 rotation/8'],
-          ['{W} = τΔθ', 'Work done by a torque', 'rotation/8'],
-          ['{L} = {I}ω', 'Angular momentum of a rigid body', 'rotation/12 rotation/13'],
-          ['{L} = {r}{m}{v} sin θ', 'Angular momentum of a particle', 'rotation/14 circular/9'],
-          ['Δ{L} = τΔ{t}', 'Angular impulse', 'rotation/12'],
-          ['Δ{x}_{cm} = {r}Δθ', 'Rolling without slipping', 'rotation/9 rotation/10'],
-          ['{T} = 1 / {f}', 'Period and frequency', 'oscillations/0'],
-          ['{T}_{{s}} = 2π√({m} / {k})', 'Period of a mass on a spring', 'oscillations/6 oscillations/7 oscillations/11'],
-          ['{T}_{{p}} = 2π√(ℓ / {g})', 'Period of a simple pendulum', 'oscillations/5 oscillations/6 oscillations/11'],
-          ['{x} = {A} cos(2π{f}{t})', 'Position in simple harmonic motion, from x = A', 'oscillations/2'],
-          ['{x} = {A} sin(2π{f}{t})', 'Position in simple harmonic motion, from x = 0', ''],
-          ['ρ = {m} / {V}', 'Density', 'fluids/0 fluids/5'],
-          ['{P} = {F}_{⊥} / {A}', 'Pressure', 'fluids/1 fluids/3'],
-          ['{P} = {P}_{0} + ρ{g}{h}', 'Absolute pressure at depth', 'fluids/2 fluids/4'],
-          ['{P}_{gauge} = ρ{g}{h}', 'Gauge pressure', 'fluids/2'],
-          ['{F}_{{b}} = ρ{V}{g}', 'Buoyant force', 'fluids/4 fluids/5 newton/12'],
-          ['{A}_{1}{v}_{1} = {A}_{2}{v}_{2}', 'Continuity', 'fluids/6'],
-          ['{P}_{1} + ρ{g}{y}_{1} + ½ρ{v}_{1}^{2} = {P}_{2} + ρ{g}{y}_{2} + ½ρ{v}_{2}^{2}', 'Bernoulli’s equation', 'fluids/7 fluids/8'],
+          ['ω = ω_{0} + α{t}', '등각가속도 운동의 각속도', 'rotation/0'],
+          ['θ = θ_{0} + ω_{0}{t} + ½α{t}^{2}', '등각가속도 운동의 각', 'rotation/0'],
+          ['ω^{2} = ω_{0}^{2} + 2α(θ − θ_{0})', '시간이 없는 각속도 식', 'rotation/0'],
+          ['{v} = {r}ω', '선속력과 각속력', 'circular/6 rotation/1 rotation/9'],
+          ['{a}_{{T}} = {r}α', '접선 가속도', 'rotation/1 rotation/11'],
+          ['τ = {r}_{⊥}{F} = {r}{F} sin θ', '돌림힘', 'rotation/2 rotation/3 rotation/4 oscillations/9'],
+          ['{I} = Σ{m}_{{i}}{r}_{{i}}^{2}', '관성 모멘트', 'rotation/5 rotation/6'],
+          ['{I}′ = {I}_{cm} + {M}{d}^{2}', '평행축 정리', 'rotation/7 oscillations/9'],
+          ['α_{sys} = Στ / {I}_{sys} = τ_{net} / {I}_{sys}', '회전에 대한 뉴턴 제2법칙', 'rotation/5 rotation/7 rotation/10 rotation/11'],
+          ['{K} = ½{I}ω^{2}', '회전 운동 에너지', 'rotation/9 rotation/13 rotation/8'],
+          ['{W} = τΔθ', '돌림힘이 한 일', 'rotation/8'],
+          ['{L} = {I}ω', '강체의 각운동량', 'rotation/12 rotation/13'],
+          ['{L} = {r}{m}{v} sin θ', '입자의 각운동량', 'rotation/14 circular/9'],
+          ['Δ{L} = τΔ{t}', '각충격량', 'rotation/12'],
+          ['Δ{x}_{cm} = {r}Δθ', '미끄러짐 없는 굴림', 'rotation/9 rotation/10'],
+          ['{T} = 1 / {f}', '주기와 진동수', 'oscillations/0'],
+          ['{T}_{{s}} = 2π√({m} / {k})', '용수철에 매달린 물체의 주기', 'oscillations/6 oscillations/7 oscillations/11'],
+          ['{T}_{{p}} = 2π√(ℓ / {g})', '단진자의 주기', 'oscillations/5 oscillations/6 oscillations/11'],
+          ['{x} = {A} cos(2π{f}{t})', '단순 조화 운동의 위치 (x = A에서 출발)', 'oscillations/2'],
+          ['{x} = {A} sin(2π{f}{t})', '단순 조화 운동의 위치 (x = 0에서 출발)', ''],
+          ['ρ = {m} / {V}', '밀도', 'fluids/0 fluids/5'],
+          ['{P} = {F}_{⊥} / {A}', '압력', 'fluids/1 fluids/3'],
+          ['{P} = {P}_{0} + ρ{g}{h}', '깊이에 따른 절대 압력', 'fluids/2 fluids/4'],
+          ['{P}_{gauge} = ρ{g}{h}', '계기 압력', 'fluids/2'],
+          ['{F}_{{b}} = ρ{V}{g}', '부력', 'fluids/4 fluids/5 newton/12'],
+          ['{A}_{1}{v}_{1} = {A}_{2}{v}_{2}', '연속 방정식', 'fluids/6'],
+          ['{P}_{1} + ρ{g}{y}_{1} + ½ρ{v}_{1}^{2} = {P}_{2} + ρ{g}{y}_{2} + ½ρ{v}_{2}^{2}', '베르누이 방정식', 'fluids/7 fluids/8'],
         ] },
     ],
   },
   {
-    id: 'mechanics', nav: 'C: Mechanics', title: 'AP Physics C: Mechanics', sub: 'Calculus-based · effective fall 2024',
+    id: 'mechanics', nav: 'C: 역학', title: 'AP 물리 C: 역학', sub: '미적분 기반 · 2024년 가을부터 적용',
     constants: [G_CONST, G_ACC, G_FIELD],
-    units: [['hertz', 'Hz'], ['joule', 'J'], ['kilogram', 'kg'], ['meter', 'm'], ['newton', 'N'], ['second', 's'], ['watt', 'W']],
-    conventions: ['The frame of reference of any problem is assumed to be inertial unless otherwise stated.',
-      'Air resistance is assumed to be negligible unless otherwise stated.',
-      'Springs and strings are assumed to be ideal unless otherwise stated.'],
+    units: [['헤르츠', 'Hz'], ['줄', 'J'], ['킬로그램', 'kg'], ['미터', 'm'], ['뉴턴', 'N'], ['초', 's'], ['와트', 'W']],
+    conventions: ['별도 언급이 없으면 모든 문제의 기준틀은 관성 기준틀로 가정한다.',
+      '별도 언급이 없으면 공기 저항은 무시한다.',
+      '별도 언급이 없으면 용수철과 줄은 이상적이라고 가정한다.'],
     groups: [
-      { h: 'Mechanics · left column', id: 'mechanics-c', vars: MECH_VARS_L,
+      { h: '역학 · 왼쪽 열', id: 'mechanics-c', vars: MECH_VARS_L,
         rows: [
-          ['{v}_{{x}} = {v}_{{x}0} + {a}_{{x}}{t}', 'Velocity at constant acceleration', 'kinematics/5'],
-          ['{x} = {x}_{0} + {v}_{{x}0}{t} + ½{a}_{{x}}{t}^{2}', 'Position at constant acceleration', 'kinematics/5 kinematics/6'],
-          ['{v}_{{x}}^{2} = {v}_{{x}0}^{2} + 2{a}_{{x}}({x} − {x}_{0})', 'Velocity without time', 'kinematics/5'],
-          ['Δ{x} = ∫{v}_{{x}}({t}) d{t}', 'Displacement as an integral', 'kinematics/9'],
-          ['Δ{v}_{{x}} = ∫{a}_{{x}}({t}) d{t}', 'Change of velocity as an integral', 'kinematics/9'],
-          ['!{x}_{cm} = Σ{m}_{{i}}!{x}_{{i}} / Σ{m}_{{i}}', 'Centre of mass', 'newton/8 momentum/8 momentum/11'],
-          ['!{r}_{cm} = ∫!{r} d{m} / ∫d{m}', 'Centre of mass of a solid body', 'momentum/9 momentum/10'],
-          ['λ = (d/dℓ) {m}(ℓ)', 'Linear mass density', 'momentum/9 rotation/6'],
-          ['!{a}_{sys} = Σ!{F} / {m}_{sys} = !{F}_{net} / {m}_{sys}', 'Newton’s second law', 'newton/4 newton/9 newton/11'],
-          ['|!{F}_{{g}}| = {G}{m}_{1}{m}_{2} / {r}^{2}', 'Universal gravitation', 'circular/7 circular/8'],
-          ['|!{F}_{{f}}| ≤ |μ!{F}_{{N}}|', 'Friction', 'newton/6 circular/2 energy/10 rotation/10'],
-          ['!{F}_{{s}} = −{k}Δ!{x}', 'Hooke’s law: spring force', 'energy/5 oscillations/1'],
-          ['{a}_{{c}} = {v}^{2} / {r} = {r}ω^{2}', 'Centripetal acceleration', 'circular/0 circular/1 circular/4 circular/6 rotation/1'],
-          ['{T} = 1 / {f}', 'Period and frequency', 'oscillations/0'],
-          ['{K} = ½{m}{v}^{2}', 'Kinetic energy', 'energy/3'],
-          ['{W} = ∫_{{a}}^{{b}} !{F} · d!{r}', 'Work', 'energy/6 energy/0'],
-          ['Δ{K} = Σ{W}_{{i}} = Σ{F}_{∥,{i}}{d}_{{i}}', 'Work–energy theorem', 'energy/3 energy/6'],
-          ['Δ{U} = −∫_{{a}}^{{b}} !{F}_{cf}({r}) · d!{r}', 'Potential energy from a conservative force', 'circular/11 energy/8'],
-          ['{F}_{{x}} = −d{U}({x}) / d{x}', 'Force from potential energy', 'energy/8 energy/9 circular/11'],
-          ['{U}_{{s}} = ½{k}(Δ{x})^{2}', 'Spring potential energy', 'energy/5 oscillations/3'],
-          ['{U}_{{G}} = −{G}{m}_{1}{m}_{2} / {r}', 'Gravitational potential energy', 'circular/10 circular/11 circular/12'],
-          ['Δ{U}_{{g}} = {m}{g}Δ{y}', 'Gravitational potential energy near the surface', 'energy/4 circular/11'],
-          ['{P}_{avg} = {W} / Δ{t} = Δ{E} / Δ{t}', 'Average power', 'energy/11'],
-          ['{P}_{inst} = d{W} / d{t}', 'Instantaneous power', 'energy/11 induction/6'],
-          ['!{p} = {m}!{v}', 'Momentum', 'momentum/0'],
-          ['!{F}_{net} = d!{p} / d{t}', 'Net force is the rate of change of momentum', 'momentum/1'],
-          ['!{J} = ∫_{{t}_{1}}^{{t}_{2}} !{F}_{net}({t}) d{t} = Δ!{p}', 'Impulse', 'momentum/1 momentum/2'],
-          ['!{v}_{cm} = Σ!{p}_{{i}} / Σ{m}_{{i}} = Σ{m}_{{i}}!{v}_{{i}} / Σ{m}_{{i}}', 'Velocity of the centre of mass', 'momentum/3 momentum/8'],
+          ['{v}_{{x}} = {v}_{{x}0} + {a}_{{x}}{t}', '등가속도 운동의 속도', 'kinematics/5'],
+          ['{x} = {x}_{0} + {v}_{{x}0}{t} + ½{a}_{{x}}{t}^{2}', '등가속도 운동의 위치', 'kinematics/5 kinematics/6'],
+          ['{v}_{{x}}^{2} = {v}_{{x}0}^{2} + 2{a}_{{x}}({x} − {x}_{0})', '시간이 없는 속도 식', 'kinematics/5'],
+          ['Δ{x} = ∫{v}_{{x}}({t}) d{t}', '적분으로 나타낸 변위', 'kinematics/9'],
+          ['Δ{v}_{{x}} = ∫{a}_{{x}}({t}) d{t}', '적분으로 나타낸 속도 변화', 'kinematics/9'],
+          ['!{x}_{cm} = Σ{m}_{{i}}!{x}_{{i}} / Σ{m}_{{i}}', '질량 중심', 'newton/8 momentum/8 momentum/11'],
+          ['!{r}_{cm} = ∫!{r} d{m} / ∫d{m}', '연속체의 질량 중심', 'momentum/9 momentum/10'],
+          ['λ = (d/dℓ) {m}(ℓ)', '선질량 밀도', 'momentum/9 rotation/6'],
+          ['!{a}_{sys} = Σ!{F} / {m}_{sys} = !{F}_{net} / {m}_{sys}', '뉴턴 제2법칙', 'newton/4 newton/9 newton/11'],
+          ['|!{F}_{{g}}| = {G}{m}_{1}{m}_{2} / {r}^{2}', '만유인력', 'circular/7 circular/8'],
+          ['|!{F}_{{f}}| ≤ |μ!{F}_{{N}}|', '마찰력', 'newton/6 circular/2 energy/10 rotation/10'],
+          ['!{F}_{{s}} = −{k}Δ!{x}', '훅 법칙: 탄성력', 'energy/5 oscillations/1'],
+          ['{a}_{{c}} = {v}^{2} / {r} = {r}ω^{2}', '구심 가속도', 'circular/0 circular/1 circular/4 circular/6 rotation/1'],
+          ['{T} = 1 / {f}', '주기와 진동수', 'oscillations/0'],
+          ['{K} = ½{m}{v}^{2}', '운동 에너지', 'energy/3'],
+          ['{W} = ∫_{{a}}^{{b}} !{F} · d!{r}', '일', 'energy/6 energy/0'],
+          ['Δ{K} = Σ{W}_{{i}} = Σ{F}_{∥,{i}}{d}_{{i}}', '일-에너지 정리', 'energy/3 energy/6'],
+          ['Δ{U} = −∫_{{a}}^{{b}} !{F}_{cf}({r}) · d!{r}', '보존력으로 구하는 퍼텐셜 에너지', 'circular/11 energy/8'],
+          ['{F}_{{x}} = −d{U}({x}) / d{x}', '퍼텐셜 에너지로 구하는 힘', 'energy/8 energy/9 circular/11'],
+          ['{U}_{{s}} = ½{k}(Δ{x})^{2}', '탄성 퍼텐셜 에너지', 'energy/5 oscillations/3'],
+          ['{U}_{{G}} = −{G}{m}_{1}{m}_{2} / {r}', '중력 퍼텐셜 에너지', 'circular/10 circular/11 circular/12'],
+          ['Δ{U}_{{g}} = {m}{g}Δ{y}', '지표면 근처의 중력 퍼텐셜 에너지', 'energy/4 circular/11'],
+          ['{P}_{avg} = {W} / Δ{t} = Δ{E} / Δ{t}', '평균 일률', 'energy/11'],
+          ['{P}_{inst} = d{W} / d{t}', '순간 일률', 'energy/11 induction/6'],
+          ['!{p} = {m}!{v}', '운동량', 'momentum/0'],
+          ['!{F}_{net} = d!{p} / d{t}', '알짜힘은 운동량의 시간 변화율', 'momentum/1'],
+          ['!{J} = ∫_{{t}_{1}}^{{t}_{2}} !{F}_{net}({t}) d{t} = Δ!{p}', '충격량', 'momentum/1 momentum/2'],
+          ['!{v}_{cm} = Σ!{p}_{{i}} / Σ{m}_{{i}} = Σ{m}_{{i}}!{v}_{{i}} / Σ{m}_{{i}}', '질량 중심의 속도', 'momentum/3 momentum/8'],
         ] },
-      { h: 'Mechanics · right column', vars: MECH_VARS_R,
+      { h: '역학 · 오른쪽 열', vars: MECH_VARS_R,
         rows: [
-          ['ω = dθ / d{t}', 'Angular velocity', 'rotation/0 circular/6'],
-          ['α = dω / d{t}', 'Angular acceleration', 'rotation/0 rotation/10'],
-          ['ω = ω_{0} + α{t}', 'Angular velocity at constant α', 'rotation/0'],
-          ['θ = θ_{0} + ω_{0}{t} + ½α{t}^{2}', 'Angle at constant α', 'rotation/0'],
-          ['ω^{2} = ω_{0}^{2} + 2α(θ − θ_{0})', 'Angular velocity without time', 'rotation/0'],
-          ['{v} = {r}ω', 'Linear and angular speed', 'circular/6 rotation/1'],
-          ['{a}_{{T}} = {r}α', 'Tangential acceleration', 'rotation/1 rotation/11'],
-          ['!{τ} = !{r} × !{F}', 'Torque', 'rotation/2 rotation/3 rotation/4 oscillations/9'],
-          ['{I}_{tot} = Σ{I}_{{i}} = Σ{m}_{{i}}{r}_{{i}}^{2}', 'Rotational inertia', 'rotation/5 rotation/6'],
-          ['{I} = ∫{r}^{2} d{m}', 'Rotational inertia of a solid body', 'rotation/6'],
-          ['{I}′ = {I}_{cm} + {M}{d}^{2}', 'Parallel-axis theorem', 'rotation/7 oscillations/9'],
-          ['α_{sys} = Στ / {I}_{sys} = τ_{net} / {I}_{sys}', 'Newton’s second law for rotation', 'rotation/5 rotation/10 rotation/11 oscillations/10'],
-          ['{K}_{rot} = ½{I}ω^{2}', 'Rotational kinetic energy', 'rotation/9 rotation/13'],
-          ['{W} = ∫τ · dθ', 'Work done by a torque', 'rotation/8'],
-          ['!{L} = !{r} × !{p} = {I}!{ω}', 'Angular momentum', 'rotation/14 circular/9 rotation/12 rotation/13'],
-          ['Δ{L} = ∫τ d{t}', 'Angular impulse', 'rotation/12'],
-          ['Δ{x}_{cm} = {r}Δθ', 'Rolling without slipping', 'rotation/9 rotation/10'],
-          ['{T} = 2π / ω = 1 / {f}', 'Period and frequency', 'oscillations/0 oscillations/8'],
-          ['{T}_{{s}} = 2π√({m} / {k})', 'Period of a mass on a spring', 'oscillations/6 oscillations/4'],
-          ['{T}_{{p}} = 2π√(ℓ / {g})', 'Period of a simple pendulum', 'oscillations/5 oscillations/6'],
-          ['{T}_{phys} = 2π√({I} / {m}{g}{d})', 'Period of a physical pendulum', 'oscillations/9'],
-          ['{x} = {x}_{max} cos(ω{t} + φ)', 'Position in simple harmonic motion', 'oscillations/8 oscillations/2'],
+          ['ω = dθ / d{t}', '각속도', 'rotation/0 circular/6'],
+          ['α = dω / d{t}', '각가속도', 'rotation/0 rotation/10'],
+          ['ω = ω_{0} + α{t}', '등각가속도 운동의 각속도', 'rotation/0'],
+          ['θ = θ_{0} + ω_{0}{t} + ½α{t}^{2}', '등각가속도 운동의 각', 'rotation/0'],
+          ['ω^{2} = ω_{0}^{2} + 2α(θ − θ_{0})', '시간이 없는 각속도 식', 'rotation/0'],
+          ['{v} = {r}ω', '선속력과 각속력', 'circular/6 rotation/1'],
+          ['{a}_{{T}} = {r}α', '접선 가속도', 'rotation/1 rotation/11'],
+          ['!{τ} = !{r} × !{F}', '돌림힘', 'rotation/2 rotation/3 rotation/4 oscillations/9'],
+          ['{I}_{tot} = Σ{I}_{{i}} = Σ{m}_{{i}}{r}_{{i}}^{2}', '관성 모멘트', 'rotation/5 rotation/6'],
+          ['{I} = ∫{r}^{2} d{m}', '연속체의 관성 모멘트', 'rotation/6'],
+          ['{I}′ = {I}_{cm} + {M}{d}^{2}', '평행축 정리', 'rotation/7 oscillations/9'],
+          ['α_{sys} = Στ / {I}_{sys} = τ_{net} / {I}_{sys}', '회전에 대한 뉴턴 제2법칙', 'rotation/5 rotation/10 rotation/11 oscillations/10'],
+          ['{K}_{rot} = ½{I}ω^{2}', '회전 운동 에너지', 'rotation/9 rotation/13'],
+          ['{W} = ∫τ · dθ', '돌림힘이 한 일', 'rotation/8'],
+          ['!{L} = !{r} × !{p} = {I}!{ω}', '각운동량', 'rotation/14 circular/9 rotation/12 rotation/13'],
+          ['Δ{L} = ∫τ d{t}', '각충격량', 'rotation/12'],
+          ['Δ{x}_{cm} = {r}Δθ', '미끄러짐 없는 굴림', 'rotation/9 rotation/10'],
+          ['{T} = 2π / ω = 1 / {f}', '주기와 진동수', 'oscillations/0 oscillations/8'],
+          ['{T}_{{s}} = 2π√({m} / {k})', '용수철에 매달린 물체의 주기', 'oscillations/6 oscillations/4'],
+          ['{T}_{{p}} = 2π√(ℓ / {g})', '단진자의 주기', 'oscillations/5 oscillations/6'],
+          ['{T}_{phys} = 2π√({I} / {m}{g}{d})', '물리 진자의 주기', 'oscillations/9'],
+          ['{x} = {x}_{max} cos(ω{t} + φ)', '단순 조화 운동의 위치', 'oscillations/8 oscillations/2'],
         ] },
-      { h: 'Geometry and trigonometry', same: '#geometry', label: 'the Physics 1 sheet' },
-      { h: 'Vectors', id: 'vectors', vars: 'The sheet’s math reference.',
+      { h: '기하와 삼각법', same: '#geometry', label: '물리 1 공식표' },
+      { h: '벡터', id: 'vectors', vars: '공식표의 수학 참고 자료.',
         rows: [
-          ['!{A} · !{B} = {AB} cos θ', 'Dot product', 'energy/0 gauss/0'],
-          ['|!{A} × !{B}| = {AB} sin θ', 'Cross product', 'rotation/2 magnetism/1'],
-          ['!{r} = ({A}{î} + {B}{ĵ} + {C}{k̂})', 'Vector from components', null],
-          ['!{C} = !{A} + !{B}', 'Vector sum', 'kinematics/7 kinematics/8'],
-          ['!{C} = ({A}_{{x}} + {B}_{{x}}){î} + ({A}_{{y}} + {B}_{{y}}){ĵ}', 'Vector sum by components', null],
+          ['!{A} · !{B} = {AB} cos θ', '스칼라곱(점곱)', 'energy/0 gauss/0'],
+          ['|!{A} × !{B}| = {AB} sin θ', '벡터곱(가위곱)', 'rotation/2 magnetism/1'],
+          ['!{r} = ({A}{î} + {B}{ĵ} + {C}{k̂})', '성분으로 나타낸 벡터', null],
+          ['!{C} = !{A} + !{B}', '벡터 합', 'kinematics/7 kinematics/8'],
+          ['!{C} = ({A}_{{x}} + {B}_{{x}}){î} + ({A}_{{y}} + {B}_{{y}}){ĵ}', '성분별 벡터 합', null],
         ] },
-      { h: 'Calculus', id: 'calculus', vars: 'The sheet’s math reference.',
+      { h: '미적분', id: 'calculus', vars: '공식표의 수학 참고 자료.',
         rows: [
-          ['d{f}/d{x} = (d{f}/d{u})(d{u}/d{x})', 'Chain rule', null],
-          ['d/d{x} ({x}^{{n}}) = {n}{x}^{{n}−1}', 'Derivative of a power', 'kinematics/10'],
-          ['d/d{x} ({e}^{{ax}}) = {a}{e}^{{ax}}', 'Derivative of an exponential', null],
-          ['d/d{x} (ln {ax}) = 1/{x}', 'Derivative of a logarithm', null],
-          ['d/d{x} [sin({ax})] = {a} cos({ax})', 'Derivative of sine', 'oscillations/2 oscillations/8'],
-          ['d/d{x} [cos({ax})] = −{a} sin({ax})', 'Derivative of cosine', 'oscillations/2 oscillations/8'],
-          ['∫{x}^{{n}} d{x} = (1/({n} + 1)) {x}^{{n}+1}, {n} ≠ −1', 'Integral of a power', 'kinematics/9 momentum/9 rotation/6'],
-          ['∫{e}^{{ax}} d{x} = (1/{a}) {e}^{{ax}}', 'Integral of an exponential', 'newton/12'],
-          ['∫d{x} / ({x} + {a}) = ln|{x} + {a}|', 'Integral giving a logarithm', 'newton/11 capacitors/3 circuits/8'],
-          ['∫cos({ax}) d{x} = (1/{a}) sin({ax})', 'Integral of cosine', null],
-          ['∫sin({ax}) d{x} = −(1/{a}) cos({ax})', 'Integral of sine', 'momentum/1'],
+          ['d{f}/d{x} = (d{f}/d{u})(d{u}/d{x})', '연쇄 법칙', null],
+          ['d/d{x} ({x}^{{n}}) = {n}{x}^{{n}−1}', '거듭제곱의 도함수', 'kinematics/10'],
+          ['d/d{x} ({e}^{{ax}}) = {a}{e}^{{ax}}', '지수 함수의 도함수', null],
+          ['d/d{x} (ln {ax}) = 1/{x}', '로그 함수의 도함수', null],
+          ['d/d{x} [sin({ax})] = {a} cos({ax})', '사인의 도함수', 'oscillations/2 oscillations/8'],
+          ['d/d{x} [cos({ax})] = −{a} sin({ax})', '코사인의 도함수', 'oscillations/2 oscillations/8'],
+          ['∫{x}^{{n}} d{x} = (1/({n} + 1)) {x}^{{n}+1}, {n} ≠ −1', '거듭제곱의 적분', 'kinematics/9 momentum/9 rotation/6'],
+          ['∫{e}^{{ax}} d{x} = (1/{a}) {e}^{{ax}}', '지수 함수의 적분', 'newton/12'],
+          ['∫d{x} / ({x} + {a}) = ln|{x} + {a}|', '로그가 되는 적분', 'newton/11 capacitors/3 circuits/8'],
+          ['∫cos({ax}) d{x} = (1/{a}) sin({ax})', '코사인의 적분', null],
+          ['∫sin({ax}) d{x} = −(1/{a}) cos({ax})', '사인의 적분', 'momentum/1'],
         ] },
-      { h: 'Identities', id: 'identities', vars: 'The sheet’s math reference.',
+      { h: '항등식', id: 'identities', vars: '공식표의 수학 참고 자료.',
         rows: [
-          ['log({a} · {b}^{{x}}) = log {a} + {x} log {b}', 'Logarithm of a product and a power', null],
-          ['sin^{2} θ + cos^{2} θ = 1', 'Pythagorean identity', null],
-          ['sin(2θ) = 2 sin θ cos θ', 'Double angle', null],
-          ['sin θ / cos θ = tan θ', 'Tangent', null],
+          ['log({a} · {b}^{{x}}) = log {a} + {x} log {b}', '곱과 거듭제곱의 로그', null],
+          ['sin^{2} θ + cos^{2} θ = 1', '피타고라스 항등식', null],
+          ['sin(2θ) = 2 sin θ cos θ', '배각 공식', null],
+          ['sin θ / cos θ = tan θ', '탄젠트', null],
         ] },
     ],
   },
   {
-    id: 'em', nav: 'C: E&amp;M', title: 'AP Physics C: Electricity and Magnetism', sub: 'Calculus-based · effective fall 2024',
+    id: 'em', nav: 'C: 전자기학', title: 'AP 물리 C: 전자기학', sub: '미적분 기반 · 2024년 가을부터 적용',
     constants: [
-      ['Coulomb constant', '{k} = 1/4πε_{0} = 9.0 × 10^{9} (N·m^{2})/C^{2}', 'electrostatics/2'],
-      ['Vacuum permittivity', 'ε_{0} = 8.85 × 10^{−12} C^{2}/(N·m^{2})', 'gauss/1'],
-      ['Vacuum permeability', 'μ_{0} = 4π × 10^{−7} (T·m)/A', 'magnetism/5'],
-      ['Proton mass', '{m}_{{p}} = 1.67 × 10^{−27} kg', 'electrostatics/0 magnetism/2'],
-      ['Neutron mass', '{m}_{{n}} = 1.67 × 10^{−27} kg', 'electrostatics/0'],
-      ['Electron mass', '{m}_{{e}} = 9.11 × 10^{−31} kg', 'electrostatics/0 electrostatics/8'],
-      ['Elementary charge', '{e} = 1.60 × 10^{−19} C', 'electrostatics/0'],
-      ['1 electron volt', '1 eV = 1.60 × 10^{−19} J', 'potential/8'],
-      ['Speed of light', '{c} = 3.00 × 10^{8} m/s', ''],
-      ['1 unified atomic mass unit', '1 u = 1.66 × 10^{−27} kg = 931 MeV/{c}^{2}', ''],
+      ['쿨롱 상수', '{k} = 1/4πε_{0} = 9.0 × 10^{9} (N·m^{2})/C^{2}', 'electrostatics/2'],
+      ['진공의 유전율', 'ε_{0} = 8.85 × 10^{−12} C^{2}/(N·m^{2})', 'gauss/1'],
+      ['진공의 투자율', 'μ_{0} = 4π × 10^{−7} (T·m)/A', 'magnetism/5'],
+      ['양성자 질량', '{m}_{{p}} = 1.67 × 10^{−27} kg', 'electrostatics/0 magnetism/2'],
+      ['중성자 질량', '{m}_{{n}} = 1.67 × 10^{−27} kg', 'electrostatics/0'],
+      ['전자 질량', '{m}_{{e}} = 9.11 × 10^{−31} kg', 'electrostatics/0 electrostatics/8'],
+      ['기본 전하', '{e} = 1.60 × 10^{−19} C', 'electrostatics/0'],
+      ['1 전자볼트', '1 eV = 1.60 × 10^{−19} J', 'potential/8'],
+      ['빛의 속력', '{c} = 3.00 × 10^{8} m/s', ''],
+      ['1 통일 원자 질량 단위', '1 u = 1.66 × 10^{−27} kg = 931 MeV/{c}^{2}', ''],
       G_CONST, G_ACC, G_FIELD,
     ],
-    units: [['ampere', 'A'], ['coulomb', 'C'], ['electron volt', 'eV'], ['farad', 'F'], ['henry', 'H'], ['hertz', 'Hz'], ['joule', 'J'], ['kilogram', 'kg'],
-      ['meter', 'm'], ['newton', 'N'], ['ohm', 'Ω'], ['second', 's'], ['tesla', 'T'], ['volt', 'V'], ['watt', 'W']],
-    conventions: ['The following conventions are used in this exam unless otherwise stated:',
-      'The frame of reference for any problem is inertial.',
-      'Frictional forces and air resistance are negligible.',
-      'Strings, springs, batteries, wires, and meters are ideal.',
-      'The electric potential is zero at an infinite distance from an isolated point charge.',
-      'The direction of current is the direction in which positive charges would drift.',
-      'Resistors and lightbulbs are ohmic.',
-      'Capacitors are air-filled (κ = 1.0).'],
+    units: [['암페어', 'A'], ['쿨롱', 'C'], ['전자볼트', 'eV'], ['패럿', 'F'], ['헨리', 'H'], ['헤르츠', 'Hz'], ['줄', 'J'], ['킬로그램', 'kg'],
+      ['미터', 'm'], ['뉴턴', 'N'], ['옴', 'Ω'], ['초', 's'], ['테슬라', 'T'], ['볼트', 'V'], ['와트', 'W']],
+    conventions: ['별도 언급이 없으면 이 시험에서는 다음 규약을 따른다:',
+      '모든 문제의 기준틀은 관성 기준틀이다.',
+      '마찰력과 공기 저항은 무시한다.',
+      '줄, 용수철, 전지, 도선, 계측기는 이상적이다.',
+      '고립된 점전하로부터 무한히 먼 곳의 전위는 0이다.',
+      '전류의 방향은 양전하가 이동하는 방향이다.',
+      '저항과 전구는 옴 법칙을 따른다.',
+      '축전기 내부는 공기로 채워져 있다 (κ = 1.0).'],
     groups: [
-      { h: 'Electricity and magnetism · left column', vars: '{A} = area · {C} = capacitance · {d} = distance · {E} = electric field · {F} = force · {I} = current · {J} = current density · ℓ = length · {P} = power · {q} = charge · {Q} = charge · {r} = radius, distance, or position · {R} = resistance · {t} = time · {U} = potential energy · {V} = electric potential or volume · ε = electric permittivity · ρ = resistivity or charge density · κ = dielectric constant · Φ = flux',
+      { h: '전기와 자기 · 왼쪽 열', vars: '{A} = 넓이 · {C} = 전기 용량 · {d} = 거리 · {E} = 전기장 · {F} = 힘 · {I} = 전류 · {J} = 전류 밀도 · ℓ = 길이 · {P} = 일률 · {q} = 전하 · {Q} = 전하 · {r} = 반지름, 거리 또는 위치 · {R} = 저항 · {t} = 시간 · {U} = 퍼텐셜 에너지 · {V} = 전위 또는 부피 · ε = 유전율 · ρ = 비저항 또는 전하 밀도 · κ = 유전 상수 · Φ = 선속',
         rows: [
-          ['|!{F}_{{E}}| = (1/4πε_{0}) |{q}_{1}{q}_{2}| / {r}^{2} = {k}|{q}_{1}{q}_{2}| / {r}^{2}', 'Coulomb’s law', 'electrostatics/2 electrostatics/3'],
-          ['!{E} = !{F}_{{E}} / {q}', 'Electric field', 'electrostatics/4 electrostatics/8'],
-          ['!{E} = (1/4πε_{0}) ∫ (d{q} / {r}^{2}) {r̂}', 'Field of a continuous charge', 'electrostatics/6 electrostatics/7'],
-          ['Φ_{{E}} = ∫!{E} · d!{A}', 'Electric flux', 'gauss/0'],
-          ['∮!{E} · d!{A} = {q}_{enc} / ε_{0}', 'Gauss’s law', 'gauss/1 gauss/2 gauss/3 gauss/4 gauss/5 gauss/6 gauss/7 capacitors/1'],
-          ['{Q}_{total} = ∫ρ({r}) d{V}', 'Total charge from a charge density', 'gauss/7'],
-          ['{U}_{{E}} = (1/4πε_{0}) {q}_{1}{q}_{2} / {r}', 'Electric potential energy of two charges', 'potential/0 potential/1'],
-          ['{V} = (1/4πε_{0}) ∫ d{q} / {r}', 'Potential of a continuous charge', 'potential/5 potential/6'],
-          ['Δ{V} = −∫_{{a}}^{{b}} !{E} · d!{r}', 'Potential difference from the field', 'potential/2 potential/3 potential/7 capacitors/1 capacitors/2 capacitors/3'],
-          ['{E}_{{x}} = −d{V} / d{x}', 'Field from potential', 'potential/3'],
-          ['Δ{U}_{{E}} = {q}Δ{V}', 'Potential energy from potential', 'potential/2 potential/8 magnetism/2'],
-          ['{C} = {Q} / Δ{V}', 'Capacitance', 'capacitors/0 capacitors/1 capacitors/2 capacitors/3'],
-          ['{C} = κε_{0}{A} / {d}', 'Parallel-plate capacitor', 'capacitors/1 capacitors/6 capacitors/8'],
-          ['{U}_{{C}} = ½{Q}Δ{V}', 'Energy stored in a capacitor', 'capacitors/4 capacitors/7'],
-          ['κ = ε / ε_{0}', 'Dielectric constant', 'capacitors/6'],
-          ['{I} = d{q} / d{t}', 'Current', 'circuits/0 circuits/8'],
-          ['{I} = ∫!{J} · d!{A}', 'Current from current density', 'circuits/0'],
-          ['!{E} = ρ!{J}', 'Ohm’s law in a material', 'circuits/0 circuits/2'],
-          ['{R} = ρℓ / {A}', 'Resistance of a wire', 'circuits/1'],
-          ['{I} = Δ{V} / {R}', 'Ohm’s law', 'circuits/2 circuits/5 circuits/6'],
-          ['{P} = {I}Δ{V}', 'Electric power', 'circuits/3 circuits/4'],
+          ['|!{F}_{{E}}| = (1/4πε_{0}) |{q}_{1}{q}_{2}| / {r}^{2} = {k}|{q}_{1}{q}_{2}| / {r}^{2}', '쿨롱 법칙', 'electrostatics/2 electrostatics/3'],
+          ['!{E} = !{F}_{{E}} / {q}', '전기장', 'electrostatics/4 electrostatics/8'],
+          ['!{E} = (1/4πε_{0}) ∫ (d{q} / {r}^{2}) {r̂}', '연속 전하 분포의 전기장', 'electrostatics/6 electrostatics/7'],
+          ['Φ_{{E}} = ∫!{E} · d!{A}', '전기 선속', 'gauss/0'],
+          ['∮!{E} · d!{A} = {q}_{enc} / ε_{0}', '가우스 법칙', 'gauss/1 gauss/2 gauss/3 gauss/4 gauss/5 gauss/6 gauss/7 capacitors/1'],
+          ['{Q}_{total} = ∫ρ({r}) d{V}', '전하 밀도로 구하는 전체 전하', 'gauss/7'],
+          ['{U}_{{E}} = (1/4πε_{0}) {q}_{1}{q}_{2} / {r}', '두 전하의 전기 퍼텐셜 에너지', 'potential/0 potential/1'],
+          ['{V} = (1/4πε_{0}) ∫ d{q} / {r}', '연속 전하 분포의 전위', 'potential/5 potential/6'],
+          ['Δ{V} = −∫_{{a}}^{{b}} !{E} · d!{r}', '전기장으로 구하는 전위차', 'potential/2 potential/3 potential/7 capacitors/1 capacitors/2 capacitors/3'],
+          ['{E}_{{x}} = −d{V} / d{x}', '전위로 구하는 전기장', 'potential/3'],
+          ['Δ{U}_{{E}} = {q}Δ{V}', '전위로 구하는 퍼텐셜 에너지', 'potential/2 potential/8 magnetism/2'],
+          ['{C} = {Q} / Δ{V}', '전기 용량', 'capacitors/0 capacitors/1 capacitors/2 capacitors/3'],
+          ['{C} = κε_{0}{A} / {d}', '평행판 축전기', 'capacitors/1 capacitors/6 capacitors/8'],
+          ['{U}_{{C}} = ½{Q}Δ{V}', '축전기에 저장된 에너지', 'capacitors/4 capacitors/7'],
+          ['κ = ε / ε_{0}', '유전 상수', 'capacitors/6'],
+          ['{I} = d{q} / d{t}', '전류', 'circuits/0 circuits/8'],
+          ['{I} = ∫!{J} · d!{A}', '전류 밀도로 구하는 전류', 'circuits/0'],
+          ['!{E} = ρ!{J}', '물질 속의 옴 법칙', 'circuits/0 circuits/2'],
+          ['{R} = ρℓ / {A}', '도선의 저항', 'circuits/1'],
+          ['{I} = Δ{V} / {R}', '옴 법칙', 'circuits/2 circuits/5 circuits/6'],
+          ['{P} = {I}Δ{V}', '전력', 'circuits/3 circuits/4'],
         ] },
-      { h: 'Electricity and magnetism · right column', vars: '{A} = area · {B} = magnetic field · {C} = capacitance · {E} = electric field · {F} = force · {I} = current · ℓ = length · {L} = inductance · {n} = number of loops per unit length · {N} = number of loops · {q} = charge · {r} = radius, distance, or position · {R} = resistance · {t} = time · {U} = potential energy · {v} = velocity or speed · ε = emf · μ = magnetic permeability · τ = time constant · Φ = flux · ω = angular frequency',
+      { h: '전기와 자기 · 오른쪽 열', vars: '{A} = 넓이 · {B} = 자기장 · {C} = 전기 용량 · {E} = 전기장 · {F} = 힘 · {I} = 전류 · ℓ = 길이 · {L} = 인덕턴스 · {n} = 단위 길이당 감은 수 · {N} = 감은 수 · {q} = 전하 · {r} = 반지름, 거리 또는 위치 · {R} = 저항 · {t} = 시간 · {U} = 퍼텐셜 에너지 · {v} = 속도 또는 속력 · ε = 기전력 · μ = 투자율 · τ = 시간 상수 · Φ = 선속 · ω = 각진동수',
         rows: [
-          ['{R}_{eq,{s}} = Σ_{{i}} {R}_{{i}}', 'Resistors in series', 'circuits/5 circuits/6'],
-          ['1 / {R}_{eq,{p}} = Σ_{{i}} 1 / {R}_{{i}}', 'Resistors in parallel', 'circuits/5 circuits/6'],
-          ['1 / {C}_{eq,{s}} = Σ_{{i}} 1 / {C}_{{i}}', 'Capacitors in series', 'capacitors/5 capacitors/8'],
-          ['{C}_{eq,{p}} = Σ_{{i}} {C}_{{i}}', 'Capacitors in parallel', 'capacitors/5 capacitors/7'],
-          ['τ = {R}_{eq}{C}_{eq}', 'RC time constant', 'circuits/8'],
-          ['∮!{B} · d!{A} = 0', 'No magnetic monopoles', 'magnetism/0'],
-          ['!{F}_{{B}} = {q}(!{v} × !{B})', 'Magnetic force on a moving charge', 'magnetism/1 magnetism/2 magnetism/3 induction/4'],
-          ['d!{B} = (μ_{0}/4π) {I}(d!{ℓ} × {r̂}) / {r}^{2}', 'Biot–Savart law', 'magnetism/6'],
-          ['!{F}_{{B}} = ∫{I}(d!{ℓ} × !{B})', 'Magnetic force on a current', 'magnetism/4 magnetism/7 induction/6'],
-          ['∮!{B} · d!{ℓ} = μ_{0}{I}_{enc}', 'Ampère’s law', 'magnetism/5 magnetism/8'],
-          ['{B}_{sol} = μ_{0}{n}{I}', 'Field inside a solenoid', 'magnetism/8 induction/7'],
-          ['Φ_{{B}} = ∫!{B} · d!{A}', 'Magnetic flux', 'induction/0 induction/3 induction/6 magnetism/0'],
-          ['ε = ∮!{E} · d!{ℓ} = −dΦ_{{B}} / d{t}', 'Faraday’s law', 'induction/0 induction/1 induction/2 induction/3 induction/5'],
-          ['|ε_{sol}| = {N}|dΦ_{{B}} / d{t}|', 'Emf of a coil of N loops', 'induction/0'],
-          ['{L}_{sol} = μ_{core}{N}^{2}{A} / ℓ', 'Inductance of a solenoid', 'induction/7'],
-          ['{U}_{{L}} = ½{L}{I}^{2}', 'Energy stored in an inductor', 'induction/7 induction/9'],
-          ['ε = −{L} d{I} / d{t}', 'Self-induced emf', 'induction/7 induction/8'],
-          ['τ = {L} / {R}_{eq}', 'RL time constant', 'induction/8'],
-          ['ω_{{LC}} = 1 / √({L}{C})', 'LC angular frequency', 'induction/9'],
+          ['{R}_{eq,{s}} = Σ_{{i}} {R}_{{i}}', '저항의 직렬연결', 'circuits/5 circuits/6'],
+          ['1 / {R}_{eq,{p}} = Σ_{{i}} 1 / {R}_{{i}}', '저항의 병렬연결', 'circuits/5 circuits/6'],
+          ['1 / {C}_{eq,{s}} = Σ_{{i}} 1 / {C}_{{i}}', '축전기의 직렬연결', 'capacitors/5 capacitors/8'],
+          ['{C}_{eq,{p}} = Σ_{{i}} {C}_{{i}}', '축전기의 병렬연결', 'capacitors/5 capacitors/7'],
+          ['τ = {R}_{eq}{C}_{eq}', 'RC 시간 상수', 'circuits/8'],
+          ['∮!{B} · d!{A} = 0', '자기 홀극은 없다', 'magnetism/0'],
+          ['!{F}_{{B}} = {q}(!{v} × !{B})', '움직이는 전하가 받는 자기력', 'magnetism/1 magnetism/2 magnetism/3 induction/4'],
+          ['d!{B} = (μ_{0}/4π) {I}(d!{ℓ} × {r̂}) / {r}^{2}', '비오-사바르 법칙', 'magnetism/6'],
+          ['!{F}_{{B}} = ∫{I}(d!{ℓ} × !{B})', '전류가 받는 자기력', 'magnetism/4 magnetism/7 induction/6'],
+          ['∮!{B} · d!{ℓ} = μ_{0}{I}_{enc}', '앙페르 법칙', 'magnetism/5 magnetism/8'],
+          ['{B}_{sol} = μ_{0}{n}{I}', '솔레노이드 내부의 자기장', 'magnetism/8 induction/7'],
+          ['Φ_{{B}} = ∫!{B} · d!{A}', '자기 선속', 'induction/0 induction/3 induction/6 magnetism/0'],
+          ['ε = ∮!{E} · d!{ℓ} = −dΦ_{{B}} / d{t}', '패러데이 법칙', 'induction/0 induction/1 induction/2 induction/3 induction/5'],
+          ['|ε_{sol}| = {N}|dΦ_{{B}} / d{t}|', 'N회 감은 코일의 기전력', 'induction/0'],
+          ['{L}_{sol} = μ_{core}{N}^{2}{A} / ℓ', '솔레노이드의 인덕턴스', 'induction/7'],
+          ['{U}_{{L}} = ½{L}{I}^{2}', '인덕터에 저장된 에너지', 'induction/7 induction/9'],
+          ['ε = −{L} d{I} / d{t}', '자체 유도 기전력', 'induction/7 induction/8'],
+          ['τ = {L} / {R}_{eq}', 'RL 시간 상수', 'induction/8'],
+          ['ω_{{LC}} = 1 / √({L}{C})', 'LC 각진동수', 'induction/9'],
         ] },
-      { h: 'Mechanics', same: '#mechanics-c', label: 'the C: Mechanics sheet (both columns)' },
-      { h: 'Geometry and trigonometry', same: '#geometry', label: 'the Physics 1 sheet' },
-      { h: 'Vectors, calculus and identities', same: '#vectors', label: 'the C: Mechanics sheet' },
+      { h: '역학', same: '#mechanics-c', label: '물리 C: 역학 공식표 (양쪽 열)' },
+      { h: '기하와 삼각법', same: '#geometry', label: '물리 1 공식표' },
+      { h: '벡터, 미적분, 항등식', same: '#vectors', label: '물리 C: 역학 공식표' },
     ],
   },
 ];
@@ -320,7 +321,7 @@ const sectionHTML = SHEETS.map(S => {
   counts[S.title] = 0;
   const consts = `
       <div class="group consts">
-        <h3>Constants and conversion factors</h3>
+        <h3>상수와 환산 인자</h3>
         <table class="ctab">${S.constants.map(([n, v, r]) => `
           <tr><th>${n}</th><td class="cv">${md(v)}</td><td>${r === null ? '' : `<span class="chips">${chips(r)}</span>`}</td></tr>`).join('')}
         </table>
@@ -328,20 +329,20 @@ const sectionHTML = SHEETS.map(S => {
   const tables = `
       <div class="group ref">
         <div class="rgrid">
-          <div><h3>Prefixes</h3><table class="rtab"><tr><th>Factor</th><th>Prefix</th><th>Symbol</th></tr>${PREFIXES.map(([f, p, s]) => `<tr><td>${md(f)}</td><td>${p}</td><td>${s}</td></tr>`).join('')}</table></div>
-          <div><h3>Unit symbols</h3><table class="rtab">${S.units.map(([n, s]) => `<tr><td>${n},</td><td>${s}</td></tr>`).join('')}</table></div>
-          <div><h3>Values of trigonometric functions for common angles</h3><table class="rtab trig">${TRIG.map(r => `<tr>${r.map((c, i) => i ? `<td>${c}</td>` : `<th>${c}</th>`).join('')}</tr>`).join('')}</table></div>
+          <div><h3>접두어</h3><table class="rtab"><tr><th>배수</th><th>접두어</th><th>기호</th></tr>${PREFIXES.map(([f, p, s]) => `<tr><td>${md(f)}</td><td>${p}</td><td>${s}</td></tr>`).join('')}</table></div>
+          <div><h3>단위 기호</h3><table class="rtab">${S.units.map(([n, s]) => `<tr><td>${n},</td><td>${s}</td></tr>`).join('')}</table></div>
+          <div><h3>주요 각의 삼각함수 값</h3><table class="rtab trig">${TRIG.map(r => `<tr>${r.map((c, i) => i ? `<td>${c}</td>` : `<th>${c}</th>`).join('')}</tr>`).join('')}</table></div>
         </div>
       </div>
       <div class="group ref">
-        <h3>Conventions</h3>
-        <p class="vars">${S.conventions[0].endsWith(':') ? S.conventions[0] : 'The following conventions are used in this exam:'}</p>
+        <h3>규약</h3>
+        <p class="vars">${S.conventions[0].endsWith(':') ? S.conventions[0] : '이 시험에서는 다음 규약을 따른다:'}</p>
         <ul class="conv">${S.conventions.filter(c => !c.endsWith(':')).map(c => `<li>${md(c)}</li>`).join('')}</ul>
       </div>`;
   const groups = S.groups.map(G => G.same ? `
       <div class="group ref">
         <h3>${G.h}</h3>
-        <p class="vars">Also on this sheet, identical to <a href="${G.same}">${G.label}</a>.</p>
+        <p class="vars">이 공식표에도 실려 있으며, <a href="${G.same}">${G.label}</a>와 같다.</p>
       </div>` : `
       <div class="group"${G.id ? ` id="${G.id}"` : ''}>
         <h3>${G.h}</h3>
@@ -361,20 +362,21 @@ const sectionHTML = SHEETS.map(S => {
 }).join('');
 
 const html = `<!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Equation sheet · Atlas of Physics</title>
+<title>공식 모음 · 물리 아틀라스</title>
+<meta name="description" content="AP 물리 1, 물리 C 공식표의 모든 식을 물리 아틀라스의 해당 페이지와 연결한 공식 모음.">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../atlas.css">
 <!-- Generated by equations/build.mjs: edit the data there and rebuild. -->
 <style>
   html { scroll-padding-top: 76px; }
-  body { min-height: 100vh; padding: 0 16px 80px; }
+  body { min-height: 100vh; padding: 0 16px 80px; word-break: keep-all; }
   header { max-width: 1180px; margin: 0 auto; padding: 22px 12px; display: flex; justify-content: space-between; gap: 12px; font: 500 12px var(--mono); letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
   header a { font: 500 19px var(--serif); letter-spacing: 0; text-transform: none; color: var(--strong); text-decoration: none; }
   header span { text-align: right; padding-top: 5px; margin-left: auto; }
@@ -448,19 +450,19 @@ const html = `<!doctype html>
 </style>
 </head>
 <body>
-  <header><a href="../">Atlas of Physics</a><span>The AP sheets, linked to the pages</span><a class="gh" href="https://github.com/nathanliow/atlas-of-physics" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></header>
+  <header><a href="../">물리 아틀라스</a><span>AP 공식표를 각 페이지와 연결</span><a class="gh" href="https://github.com/nathanliow/atlas-of-physics" aria-label="GitHub에서 소스 보기"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></header>
   <section class="hero">
-    <h1>Equation sheet</h1>
-    <p>The official AP Physics 1 and Physics C equation sheets, line by line. Each equation links to every page of the atlas that shows or uses it.</p>
+    <h1>공식 모음</h1>
+    <p>AP 물리 1과 물리 C 공식 공식표를 한 줄씩 옮겼다. 각 식은 그 식을 보여 주거나 사용하는 아틀라스의 모든 페이지로 연결된다.</p>
   </section>
-  <nav aria-label="Sheets"><div class="in">
+  <nav aria-label="공식표"><div class="in">
     ${SHEETS.map(S => `<a href="#${S.id}">${S.nav}</a>`).join('\n    ')}
-    <input type="search" id="q" placeholder="Filter: torque, ω, Gauss…" aria-label="Filter equations" autocomplete="off">
+    <input type="search" id="q" placeholder="검색: 돌림힘, ω, 가우스…" aria-label="공식 검색" autocomplete="off">
   </div></nav>
   <main>${sectionHTML}
-    <p class="empty" id="empty">No equation matches.</p>
+    <p class="empty" id="empty">일치하는 식이 없다.</p>
   </main>
-  <footer>Transcribed from the Table of Information in the College Board’s AP Physics 1, Physics C: Mechanics and Physics C: Electricity and Magnetism Course and Exam Descriptions (effective fall 2024; sheets © 2025 College Board), in the sheets’ order and notation. Arrows mark vectors, as on the sheets. The names beside each equation are the atlas’s labels, not part of the sheets. Chips give section and page; muted rows are on the sheet but not drawn in the atlas yet.</footer>
+  <footer>College Board의 AP Physics 1, Physics C: Mechanics, Physics C: Electricity and Magnetism 과정·시험 안내서(Course and Exam Description)에 실린 공식표(Table of Information)를 공식표의 순서와 표기 그대로 옮겼다(2024년 가을부터 적용, 공식표 © 2025 College Board). 화살표는 공식표와 마찬가지로 벡터를 나타낸다. 각 식 옆의 이름은 아틀라스가 붙인 것으로 공식표에는 없다. 칩은 절과 페이지를 가리키며, 흐리게 표시된 줄은 공식표에는 있지만 아직 아틀라스에 그려지지 않은 식이다.<br>원작: <a href="https://github.com/nathanliow/atlas-of-physics">Atlas of Physics</a> (Nathan Liow, MIT License) · 한국어 번역판</footer>
 <script>
   // Filter rows by their text (equation, name and linked page titles); hide groups and sheets left empty.
   const q = document.getElementById('q'), norm = s => s.normalize('NFKD').toLowerCase();

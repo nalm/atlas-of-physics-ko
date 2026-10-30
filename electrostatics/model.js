@@ -34,9 +34,9 @@ export const coulomb = (q1, q2, r) => K * Math.abs(q1 * q2) / (r * r);
 
 // ---------- 0 · charge: three carbon atoms (6 protons each) ----------
 export const ATOMS = [
-  { name: 'neutral atom', p: 6, e: 6 },
-  { name: 'negative ion', p: 6, e: 7 },
-  { name: 'positive ion', p: 6, e: 5 },
+  { name: '중성 원자', p: 6, e: 6 },
+  { name: '음이온', p: 6, e: 7 },
+  { name: '양이온', p: 6, e: 5 },
 ];
 export const netCharge = a => (a.p - a.e) * QE;
 export const ORBIT_T = 6;           // s per lap of the cartoon electrons
@@ -68,13 +68,13 @@ export function induce(t) {
   let t0 = 0, stageT = 0;
   const seg = len => { const u = (t - t0) / len; if (u >= 0 && u < 1) stageT = t - t0; t0 += len; return u; };
   const uA = seg(P.approach), uH = seg(P.hold), uG = seg(P.ground), uC = seg(P.cut), uL = seg(P.leave);
-  let dTip = ROD.far, stage = 'neutral', grounded = false, Qnet = 0, rod = true;
-  if (uA < 1) { dTip = ROD.far + (ROD.near - ROD.far) * ease(uA); stage = 'rod brought near'; }
-  else if (uH < 1) { dTip = ROD.near; stage = 'charges separate'; }
-  else if (uG < 1) { dTip = ROD.near; stage = 'grounded'; grounded = true; Qnet = QG; }
-  else if (uC < 1) { dTip = ROD.near; stage = 'ground cut'; Qnet = QG; }
-  else if (uL < 1) { dTip = ROD.near + (ROD.far + 0.6 - ROD.near) * ease(uL); stage = 'rod taken away'; Qnet = QG; }
-  else { dTip = 99; stage = 'charged by induction'; Qnet = QG; rod = false; stageT = t - t0; }
+  let dTip = ROD.far, stage = '중성', grounded = false, Qnet = 0, rod = true;
+  if (uA < 1) { dTip = ROD.far + (ROD.near - ROD.far) * ease(uA); stage = '막대를 가까이 가져옴'; }
+  else if (uH < 1) { dTip = ROD.near; stage = '전하 분리'; }
+  else if (uG < 1) { dTip = ROD.near; stage = '접지'; grounded = true; Qnet = QG; }
+  else if (uC < 1) { dTip = ROD.near; stage = '접지 끊음'; Qnet = QG; }
+  else if (uL < 1) { dTip = ROD.near + (ROD.far + 0.6 - ROD.near) * ease(uL); stage = '막대를 치움'; Qnet = QG; }
+  else { dTip = 99; stage = '유도로 대전됨'; Qnet = QG; rod = false; stageT = t - t0; }
   return { dTip, stage, stageT, grounded, Qnet, rod, charges: rod ? rodCharges(dTip) : [] };
 }
 

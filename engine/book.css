@@ -34,6 +34,8 @@
 
 /* ---- left page: the text ---- */
 .sheet { max-width: 520px; }
+/* Korean: break lines between words, not inside them */
+.sheet, .plate, .corner, .leaf-front, .lbl { word-break: keep-all; overflow-wrap: break-word; }
 .kicker { font: 500 12px/1 var(--mono); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
 .sheet h1, .plate h1 { font: 400 clamp(40px, 4.2vw, 62px)/1 var(--serif); color: var(--strong); margin: 18px 0 6px; letter-spacing: -.01em; }
 .sheet .sub, .plate .sub { font: italic 400 clamp(20px, 1.8vw, 26px)/1.2 var(--serif); color: var(--muted); margin-bottom: 26px; }

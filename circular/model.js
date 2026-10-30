@@ -174,10 +174,10 @@ export const LAUNCH = { r0: 2 * EARTH.R, rStop: 6 * EARTH.R };
 LAUNCH.vc = orbitV(LAUNCH.r0);
 LAUNCH.vesc = vEsc(LAUNCH.r0);
 LAUNCH.list = [
-  { name: 'circle', k: LAUNCH.vc / LAUNCH.vesc },
-  { name: 'ellipse', k: 0.8 },
-  { name: 'parabola', k: 1.0 },
-  { name: 'hyperbola', k: 1.2 },
+  { name: '원', k: LAUNCH.vc / LAUNCH.vesc },
+  { name: '타원', k: 0.8 },
+  { name: '포물선', k: 1.0 },
+  { name: '쌍곡선', k: 1.2 },
 ].map(o => {
   const v0 = o.k * LAUNCH.vesc, E = 0.5 * v0 * v0 - GM / LAUNCH.r0;
   const a = E < 0 ? -GM / (2 * E) : Infinity;

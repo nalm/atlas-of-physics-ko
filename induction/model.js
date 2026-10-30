@@ -66,10 +66,10 @@ export function fluxScene(t) {
 export const LENZ = { a: 0.05, near: 0.03, far: 0.25, run: 2.6, R: 0.01 };
 LENZ.v = (LENZ.far - LENZ.near) / LENZ.run;
 export const CASES = [
-  { key: 'nIn', pole: 'N', move: 'in', name: 'N pole approaching' },
-  { key: 'nOut', pole: 'N', move: 'out', name: 'N pole leaving' },
-  { key: 'sIn', pole: 'S', move: 'in', name: 'S pole approaching' },
-  { key: 'sOut', pole: 'S', move: 'out', name: 'S pole leaving' },
+  { key: 'nIn', pole: 'N', move: 'in', name: 'N극 접근' },
+  { key: 'nOut', pole: 'N', move: 'out', name: 'N극 멀어짐' },
+  { key: 'sIn', pole: 'S', move: 'in', name: 'S극 접근' },
+  { key: 'sOut', pole: 'S', move: 'out', name: 'S극 멀어짐' },
 ];
 // area vector along −x (away from the magnet). Φ > 0 means B points along −x through the loop.
 export function lenzCase(c, t) {
